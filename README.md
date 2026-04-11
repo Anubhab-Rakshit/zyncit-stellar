@@ -1,52 +1,52 @@
-# ZYNC - Decentralized Content Sharing Platform (Stellar)
+# ZYNC - Decentralized Content Platform (Stellar)
 
-ZYNC is a decentralized publishing and content-sharing platform built on the **Stellar Blockchain** using **Soroban** smart contracts. The platform empowers creators with decentralized content ownership, fair monetization, and transparent royalty distribution.
+ZYNC is a high-fidelity decentralized content-sharing platform built exclusively for the **Stellar Blockchain** using **Soroban** smart contracts. The platform empowers creators with decentralized ownership, role-based access control, and automated royalty settlements.
 
-## App Interface Preview
+## App Interface
 
-### Homepage
-<img width="1280" height="675" alt="Homepage" src="assets/Homepage.jpg" />
+### 🌐 Dynamic Homepage
+Custom-built editorial interface with deep-layer parallax and glassmorphic navigation.
+<img width="1280" alt="Homepage" src="assets/homepage-zync.png" />
 
-### User Dashboard
-<img width="1280" height="850" alt="User Dashboard" src="assets/User Dashboard.jpg" />
+### 🛰️ Freighter Authentication
+Seamless Web3 integration using the official Stellar **Freighter Wallet** for secure identity verification.
+<img width="1280" alt="Freighter Connection" src="assets/freighter-connection.png" />
 
-### Upload Content
-<img width="1280" height="1012" alt="Upload Content" src="assets/Upload Content.jpg" />
+### 💰 Wallet & Balance Management
+Real-time tracking of native **XLM** balances via the Stellar Horizon API.
+<img width="1280" alt="Wallet Balance" src="assets/wallet-balance-freighter.png" />
 
-### Connect Wallet (Freighter)
-<img width="1280" height="754" alt="Connect Wallet" src="assets/Connect Wallet.jpg" />
-
-### Digital Wallet (XLM)
-<img width="1280" height="631" alt="Digital Wallet" src="assets/Digital Wallet.jpg" />
+### 💎 NFT Content Registration
+Direct-to-chain content minting where publishing metadata is permanently anchored to the Soroban network.
+<img width="1280" alt="NFT Upload" src="assets/nft-upload-zync.png" />
 
 ---
 
-## Features
+## Technical Features
 
-- **Decentralized Publishing**: Tokenize your content as Soroban NFTs.
-- **Fair Monetization**: Direct peer-to-peer payments via Payment Escrows.
-- **Automated Royalties**: Transparent secondary sale distributions managed by RoyaltyManager.
-- **Access Control**: Role-based permissions (Admin, Creator, Consumer, Moderator).
-- **Stellar Integration**: Fast, low-cost transactions on the Stellar Testnet.
-- **Freighter Wallet**: Secure authentication using the official Stellar wallet extension.
+- **Decentralized Publishing**: Each piece of content is tokenized as a unique Soroban NFT on the Stellar network.
+- **Smart Contract Infrastructure**: Logic-driven platform powered by 6 specialized Rust contracts.
+- **Automated Royalties**: Transparent secondary sale distributions handled by the `RoyaltyManager` contract.
+- **Role-Based Permissions**: Granular ecosystem control (Admin, Creator, Consumer, Moderator) via a native `AccessControl` system.
+- **Blazing Fast Performance**: Sub-second finality and minimal gas fees on the Stellar Testnet.
 
 ---
 
 ## Technology Stack
 
-- **Blockchain**: Stellar (Soroban Smart Contracts)
-- **Contracts Language**: Rust
-- **Frontend**: React, TypeScript, Tailwind CSS
-- **Backend**: Express.js (Metadata Indexing)
-- **Database**: MongoDB (Off-chain metadata)
-- **Wallet**: Freighter API
+- **Blockchain Engine**: Stellar (Soroban)
+- **Contract Language**: Rust
+- **Interface**: Next.js, TypeScript, Vanilla CSS
+- **Infrastructure**: Express.js, Node.js
+- **Metadata Vault**: MongoDB
+- **Hardware Integration**: Freighter Wallet API
 
 ---
 
-## Smart Contracts (Soroban)
+## Soroban Smart Contracts
 
-| Contract | Contract ID |
-|----------|-------------|
+| Contract Component | Deployment Address (Testnet) |
+| :--- | :--- |
 | **AccessControl** | `CAUXZFU6GH57S5QWSPO7M2I2ZMWWIX7VA4RFXOA6AT6724D5PTKBZ22A` |
 | **ContentNFT** | `CA7VIJCB4D3A7LU2UZHIQDKKCREREBHRT6RLFS35NPT3GKCBMV73WBRW` |
 | **RoyaltyManager** | `CBUKJDKA2DSQ4HF5IGAQDUJJ7TLDU3C44ZNA3D7T2IKEFG77T7XMNITS` |
@@ -56,36 +56,37 @@ ZYNC is a decentralized publishing and content-sharing platform built on the **S
 
 ---
 
-## Getting Started
+## Installation & Setup
 
 ### Prerequisites
+1. [Node.js v18+](https://nodejs.org/)
+2. [Freighter Extension](https://www.freighter.app/)
+3. [Rust & Soroban Toolchain](https://soroban.stellar.org/docs/getting-started/setup)
 
-- [Node.js & npm](https://nodejs.org/)
-- [Freighter Wallet](https://www.freighter.app/)
-- [Rust & Soroban CLI](https://soroban.stellar.org/docs/getting-started/setup)
+### Local Deployment
 
-### Installation
+1. **Clone & Setup Core**
+   ```bash
+   git clone https://github.com/Anubhab-Rakshit/zyncit-stellar
+   cd zyncit-stellar
+   ```
 
-1. **Clone the Repository**
-    ```bash
-    git clone https://github.com/Anubhab-Rakshit/pitchhackers
-    ```
-2. **Setup Backend**
-    ```bash
-    cd backend
-    npm install
-    cp .env.example .env # Add your MongoDB URI and Stellar Private Key
-    npm run dev
-    ```
-3. **Setup Frontend**
-    ```bash
-    cd ../frontend
-    npm install
-    npm run dev
-    ```
+2. **Initialize Backend**
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
+
+3. **Launch Frontend**
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
 
 ---
 
 ## License
 
-This project is open-source and intended for hackathon or demonstration purposes. For terms, see [LICENSE](LICENSE).
+This project is open-source. For information regarding contribution guidelines or terms of service, please refer to the [LICENSE](LICENSE) file.
