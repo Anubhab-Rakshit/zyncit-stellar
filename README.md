@@ -22,6 +22,12 @@ Direct-to-chain content minting where publishing metadata is permanently anchore
 
 ---
 
+## 📽️ Video Explanation
+Watch the detailed walkthrough and demonstration of the Zync platform on Stellar:
+[**Watch on Google Drive**](https://drive.google.com/drive/folders/17dLtEjczj6FqkgJJSdYAzHzNRuH3Avii?usp=sharing)
+
+---
+
 ## Technical Features
 
 - **Decentralized Publishing**: Each piece of content is tokenized as a unique Soroban NFT on the Stellar network.
