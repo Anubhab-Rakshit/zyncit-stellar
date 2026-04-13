@@ -1,5 +1,7 @@
 import { Contract, rpc, Keypair, Networks, TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
 import dotenv from "dotenv";
+import { emitPlatformEvent } from "../services/eventBus";
+import { waitForTransactionFinality } from "../services/txTracker";
 dotenv.config();
 
 export const mintNFT = async (to: string, metadataURL: string) => {
@@ -20,7 +22,7 @@ export const mintNFT = async (to: string, metadataURL: string) => {
       .addOperation(
         contract.call("mint",
           nativeToScVal(to, { type: "address" }),
-          nativeToScVal(metadataURL, { type: "symbol" }),
+          nativeToScVal(metadataURL, { type: "string" }),
           nativeToScVal(10, { type: "u32" })
         )
       )
@@ -32,6 +34,21 @@ export const mintNFT = async (to: string, metadataURL: string) => {
     const sendRes = await rpcServer.sendTransaction(preppedTx);
 
     console.log("🚀 TX sent:", sendRes.hash);
+
+    const finality = await waitForTransactionFinality(rpcServer, sendRes.hash, {
+      action: "mint_nft",
+      to,
+    });
+
+    if (finality.status !== "success") {
+      return { success: false, error: "Transaction failed before finality", txHash: sendRes.hash };
+    }
+
+    emitPlatformEvent("nft_minted", {
+      owner: to,
+      metadataURL,
+      txHash: sendRes.hash,
+    });
 
     return { success: true, txHash: sendRes.hash, tokenId: "1" };
   } catch (error: any) {

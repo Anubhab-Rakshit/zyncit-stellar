@@ -1,4 +1,6 @@
 import { Contract, rpc, Keypair, Networks, TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
+import { emitPlatformEvent } from "../services/eventBus";
+import { waitForTransactionFinality } from "../services/txTracker";
 
 export const buyNFT = async (tokenId: number, priceInXLM: string) => {
   try {
@@ -18,7 +20,7 @@ export const buyNFT = async (tokenId: number, priceInXLM: string) => {
           nativeToScVal(accountKP.publicKey(), { type: "address" }),
           nativeToScVal(accountKP.publicKey(), { type: "address" }), 
           nativeToScVal(Number(priceInXLM) * 1e7, { type: "i128" }),
-          nativeToScVal("native", { type: "symbol" })
+          nativeToScVal(accountKP.publicKey(), { type: "address" })
         )
       )
       .setTimeout(30)
@@ -27,6 +29,27 @@ export const buyNFT = async (tokenId: number, priceInXLM: string) => {
     const preppedTx = await rpcServer.prepareTransaction(tx);
     preppedTx.sign(accountKP);
     const sendRes = await rpcServer.sendTransaction(preppedTx);
+
+    const finality = await waitForTransactionFinality(rpcServer, sendRes.hash, {
+      action: "buy_nft",
+      tokenId,
+      priceInXLM,
+    });
+
+    if (finality.status !== "success") {
+      return {
+        success: false,
+        error: "Transaction failed before finality",
+        txHash: sendRes.hash,
+      };
+    }
+
+    emitPlatformEvent("nft_purchased", {
+      tokenId,
+      priceInXLM,
+      txHash: sendRes.hash,
+      buyer: accountKP.publicKey(),
+    });
 
     console.log("💸 Buying NFT... tx:", sendRes.hash);
 

@@ -36,6 +36,53 @@ Watch the detailed walkthrough and demonstration of the Zync platform on Stellar
 - **Role-Based Permissions**: Granular ecosystem control (Admin, Creator, Consumer, Moderator) via a native `AccessControl` system.
 - **Blazing Fast Performance**: Sub-second finality and minimal gas fees on the Stellar Testnet.
 
+## Level Completion Matrix
+
+This repository now includes complete implementations for all stated learning levels.
+
+### Level 1 - White Belt
+- Multi-wallet connect flow with wallet detection and testnet network checks in `frontend/app/auth/page.tsx`.
+- Real Horizon testnet XLM balance loading and periodic refresh in `frontend/app/wallet/page.tsx`.
+- Testnet wallet funding via Friendbot in `frontend/app/wallet/page.tsx`.
+- Real send-XLM transaction flow (build, sign via wallet, submit) in `frontend/app/wallet/page.tsx`.
+
+### Level 2 - Multi-wallet + Contract + Sync
+- StellarWalletsKit integration in `frontend/lib/wallet-kit.ts` and `frontend/app/auth/page.tsx`.
+- Explicit wallet error handling (`wallet not found`, `rejected`, `insufficient`) in `frontend/lib/errors.ts` and `backend/src/utils/stellarError.ts`.
+- Contract deployment and invocation paths for mint, upload-content, and purchase in:
+  - `backend/src/utils/mintNFT.ts`
+  - `backend/src/web3/uploadContent.ts`
+  - `backend/src/web3/buyNFT.ts`
+- Transaction lifecycle tracking (`pending/success/fail`) in:
+  - `backend/src/services/txTracker.ts`
+  - `backend/src/controllers/tx.Controller.ts`
+  - `frontend/app/post/[id]/post-detail.tsx`
+  - `frontend/app/wallet/page.tsx`
+- Real-time event streaming and synchronization using SSE in:
+  - `backend/src/routes/tx.Routes.ts`
+  - `backend/src/services/eventBus.ts`
+  - `frontend/app/wallet/page.tsx`
+
+### Level 3 - E2E quality
+- Loading/progress states across auth/upload/profile/purchase/wallet flows.
+- Basic caching with TTL for NFT and profile-heavy views in:
+  - `frontend/lib/cache.ts`
+  - `frontend/app/content/page.tsx`
+  - `frontend/app/my-nfts/page.tsx`
+  - `frontend/app/post/[id]/post-detail.tsx`
+- Added backend tests for critical error classification in `backend/src/__tests__/stellarError.test.ts`.
+- This documentation updated with implementation mapping and verification points.
+
+### Level 4 - Production readiness
+- Inter-contract call pattern added via `instant_settle_with_royalty` in `contracts/payment_escrow/src/lib.rs`.
+- Marketplace purchase endpoint and frontend purchase flow in:
+  - `backend/src/routes/nft.Routes.ts`
+  - `frontend/app/api/nft/buy/route.ts`
+  - `frontend/app/post/[id]/post-detail.tsx`
+- Advanced real-time event streaming pipeline via SSE route `backend/src/routes/tx.Routes.ts`.
+- CI pipeline added for frontend, backend, and contracts in `.github/workflows/ci.yml`.
+- Mobile responsive behavior preserved and extended in updated wallet/post/profile pages.
+
 ---
 
 ## Technology Stack

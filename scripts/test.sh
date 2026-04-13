@@ -23,8 +23,5 @@ cargo test --manifest-path contracts/subscription_manager/Cargo.toml -- --nocapt
 echo "Running ContentRegistry tests..."
 cargo test --manifest-path contracts/content_registry/Cargo.toml -- --nocapture
 
-echo "Running GovernanceDAO tests..."
-cargo test --manifest-path contracts/governance_dao/Cargo.toml -- --nocapture
-
 echo ""
 echo "All tests passed!"

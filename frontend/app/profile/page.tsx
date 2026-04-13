@@ -139,12 +139,25 @@ export default function ProfilePage() {
     setError(null)
 
     try {
-      const avatarUrl = formData.avatar
+      let avatarUrl = formData.avatar
 
       if (avatarFile) {
-        setError("File upload to IPFS is not yet implemented. Please use a URL for now.")
-        setIsSubmitting(false)
-        return
+        const form = new FormData()
+        form.append("file", avatarFile)
+        const uploadResponse = await fetch("/api/upload/avatar", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: form,
+        })
+
+        const uploadData = await uploadResponse.json()
+        if (!uploadResponse.ok || !uploadData?.imageURL) {
+          throw new Error(uploadData?.error || "Avatar upload failed")
+        }
+
+        avatarUrl = uploadData.imageURL
       }
 
       const response = await fetch("/api/profile/update", {

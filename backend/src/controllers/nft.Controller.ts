@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import Nft from "../models/nft.models";
+import { emitPlatformEvent } from "../services/eventBus";
 
 /**
  * @desc    Get all NFTs
@@ -120,6 +121,12 @@ export const toggleNFTSale = asyncHandler(async (req: Request, res: Response) =>
 
   nft.forSale = forSale;
   await nft.save();
+
+  emitPlatformEvent("nft_sale_toggled", {
+    tokenId,
+    forSale,
+    owner: userAddress,
+  });
 
   res.status(200).json({
     success: true,

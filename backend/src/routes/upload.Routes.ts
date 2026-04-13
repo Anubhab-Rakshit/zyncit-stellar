@@ -11,6 +11,25 @@ import { getAllNFTs, myNFTs, toggleNFTSale } from "../controllers/nft.Controller
 const router = Router();
 const upload = multer({ dest: "uploads/" });
 
+router.post("/avatar", walletProtect, upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, message: "No file uploaded" });
+
+    const filePath = req.file.path;
+    const imageURL = await uploadToPinata(filePath);
+    fs.unlinkSync(filePath);
+
+    return res.status(200).json({
+      success: true,
+      message: "Avatar uploaded successfully",
+      imageURL,
+    });
+  } catch (error) {
+    console.error("❌ Avatar upload error:", error);
+    return res.status(500).json({ success: false, message: "Avatar upload failed", error });
+  }
+});
+
 router.post("/upload", walletProtect, upload.single("file"), async (req, res) => {
   try {
     const userAddress = (req as any).user.address;

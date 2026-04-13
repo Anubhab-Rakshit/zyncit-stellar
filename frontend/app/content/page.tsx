@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Search, Filter, FileText, ImageIcon, Clock, TrendingUp, ExternalLink, Share2 } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import { useAuth } from "@/lib/auth-context"
+import { cacheGet, cacheSet } from "@/lib/cache"
 
 interface NFT {
   _id: string
@@ -40,6 +41,11 @@ export default function ContentLibraryPage() {
     const fetchMyNFTs = async () => {
       try {
         setLoading(true)
+        const cached = cacheGet<NFT[]>("zync_cache_my_nfts")
+        if (cached) {
+          setNfts(cached)
+          setLoading(false)
+        }
         const token = localStorage.getItem("zync_token")
         if (!token) {
           router.push("/auth")
@@ -56,7 +62,9 @@ export default function ContentLibraryPage() {
         console.log("[v0] My NFTs response:", data)
 
         if (data.success) {
-          setNfts(data.data || [])
+          const next = data.data || []
+          setNfts(next)
+          cacheSet("zync_cache_my_nfts", next, 60_000)
         }
       } catch (error) {
         console.error("[v0] Error fetching NFTs:", error)

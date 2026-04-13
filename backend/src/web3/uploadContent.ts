@@ -1,4 +1,6 @@
 import { Contract, rpc, Keypair, Networks, TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
+import { emitPlatformEvent } from "../services/eventBus";
+import { waitForTransactionFinality } from "../services/txTracker";
 
 export const uploadContentToBlockchain = async (
   cid: string,
@@ -21,8 +23,8 @@ export const uploadContentToBlockchain = async (
       .addOperation(
         contract.call("register_content",
           nativeToScVal(accountKP.publicKey(), { type: "address" }),
-          nativeToScVal(fileHash, { type: "symbol" }),
-          nativeToScVal(cid, { type: "symbol" })
+          nativeToScVal(fileHash, { type: "string" }),
+          nativeToScVal(cid, { type: "string" })
         )
       )
       .setTimeout(30)
@@ -31,6 +33,22 @@ export const uploadContentToBlockchain = async (
     const preppedTx = await rpcServer.prepareTransaction(tx);
     preppedTx.sign(accountKP);
     const sendRes = await rpcServer.sendTransaction(preppedTx);
+
+    const finality = await waitForTransactionFinality(rpcServer, sendRes.hash, {
+      action: "register_content",
+      cid,
+      fileHash,
+    });
+
+    if (finality.status !== "success") {
+      return { success: false, error: "Transaction failed before finality", txHash: sendRes.hash };
+    }
+
+    emitPlatformEvent("nft_minted", {
+      txHash: sendRes.hash,
+      contentId: fileHash,
+      cid,
+    });
 
     return {
       success: true,

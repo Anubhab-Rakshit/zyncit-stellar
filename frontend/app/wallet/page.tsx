@@ -5,15 +5,23 @@ import { useAuth } from "@/lib/auth-context"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import { Copy, Check, Download, UploadIcon, ExternalLink, Shield, Key, Coins, Clock, DollarSign } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Asset, Horizon, Networks, Operation, TransactionBuilder } from "@stellar/stellar-sdk"
+import { mapWalletError } from "@/lib/errors"
+import { getWalletAddress, signWalletTransaction } from "@/lib/wallet-kit"
 
 export default function WalletPage() {
-  const { address, isAuthenticated } = useAuth()
+  const { address, isAuthenticated, logout } = useAuth()
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null)
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [txMessage, setTxMessage] = useState<string | null>(null)
+  const [isSending, setIsSending] = useState(false)
+  const [recipient, setRecipient] = useState("")
+  const [amount, setAmount] = useState("")
+  const [transactions, setTransactions] = useState<Array<{ type: string; amount: string; party: string; time: string; status: "pending" | "success" | "fail"; txHash?: string }>>([])
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -44,6 +52,39 @@ export default function WalletPage() {
       }
     }
     fetchBalance()
+    const interval = setInterval(fetchBalance, 12000)
+    return () => clearInterval(interval)
+  }, [address])
+
+  useEffect(() => {
+    if (!address) return
+    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:5001"
+    const streamUrl = `${backendUrl}/api/tx/events/stream`
+    const source = new EventSource(streamUrl)
+
+    source.addEventListener("tx_status", (event) => {
+      const data = JSON.parse((event as MessageEvent).data) as {
+        payload?: { txHash: string; status: "pending" | "success" | "fail" }
+      }
+
+      const tx = data.payload
+      if (!tx?.txHash) return
+
+      setTransactions((prev) =>
+        prev.map((item) =>
+          item.txHash === tx.txHash
+            ? {
+                ...item,
+                status: tx.status,
+              }
+            : item,
+        ),
+      )
+    })
+
+    return () => {
+      source.close()
+    }
   }, [address])
 
   useEffect(() => {
@@ -148,13 +189,99 @@ export default function WalletPage() {
     },
   ]
 
-  const transactions = [
-    { type: "Sale", amount: "+2.5 XLM", party: "GCX4...3F1A", time: "2h ago", status: "success" },
-    { type: "Royalty", amount: "+0.3 XLM", party: "GB9B...7C2D", time: "5h ago", status: "success" },
-    { type: "Withdraw", amount: "-1.0 XLM", party: "GD3E...9B1C", time: "1d ago", status: "success" },
-    { type: "Sale", amount: "+5.2 XLM", party: "GA6D...4A8F", time: "2d ago", status: "success" },
-    { type: "Deposit", amount: "+10.0 XLM", party: "GC9F...2C3D", time: "3d ago", status: "pending" },
-  ]
+  const requestFriendbotFunding = async () => {
+    if (!address) return
+    setTxMessage("Requesting testnet funds...")
+    try {
+      const friendbotUrl = `https://friendbot.stellar.org/?addr=${encodeURIComponent(address)}`
+      const response = await fetch(friendbotUrl)
+      if (!response.ok) {
+        const text = await response.text()
+        throw new Error(text || "Funding failed")
+      }
+      setTxMessage("Wallet funded from Friendbot. Refreshing balance...")
+      const res = await fetch(`https://horizon-testnet.stellar.org/accounts/${address}`)
+      if (res.ok) {
+        const data = await res.json()
+        const nativeBalance = data.balances.find((b: any) => b.asset_type === "native")?.balance || "0"
+        setXlmBalance(Number(nativeBalance).toFixed(4))
+        setUsdBalance(`$${(Number(nativeBalance) * 0.12).toFixed(2)}`)
+      }
+    } catch (error) {
+      const mapped = mapWalletError(error)
+      setTxMessage(mapped.message)
+    }
+  }
+
+  const sendXlm = async () => {
+    if (!address) return
+    if (!recipient || !amount) {
+      setTxMessage("Recipient and amount are required")
+      return
+    }
+
+    setIsSending(true)
+    setTxMessage("Preparing transaction...")
+    try {
+      const { address: signerAddress } = await getWalletAddress()
+      if (signerAddress !== address) {
+        throw new Error("Connected wallet address mismatch")
+      }
+
+      const server = new Horizon.Server("https://horizon-testnet.stellar.org")
+      const source = await server.loadAccount(address)
+
+      const tx = new TransactionBuilder(source, {
+        fee: "100",
+        networkPassphrase: Networks.TESTNET,
+      })
+        .addOperation(
+          Operation.payment({
+            destination: recipient,
+            asset: Asset.native(),
+            amount,
+          }),
+        )
+        .setTimeout(120)
+        .build()
+
+      const signed = await signWalletTransaction(tx.toXDR(), address)
+      const signedTx = TransactionBuilder.fromXDR(signed.signedTxXdr, Networks.TESTNET)
+      const submitted = await server.submitTransaction(signedTx)
+
+      setTransactions((prev) => [
+        {
+          type: "Transfer",
+          amount: `-${amount} XLM`,
+          party: `${recipient.slice(0, 4)}...${recipient.slice(-4)}`,
+          time: "just now",
+          status: "success",
+          txHash: submitted.hash,
+        },
+        ...prev,
+      ])
+
+      setTxMessage(`Transaction submitted: ${submitted.hash.slice(0, 10)}...`)
+      setShowWithdrawModal(false)
+      setRecipient("")
+      setAmount("")
+    } catch (error) {
+      const mapped = mapWalletError(error)
+      setTransactions((prev) => [
+        {
+          type: "Transfer",
+          amount: `-${amount || "0"} XLM`,
+          party: recipient ? `${recipient.slice(0, 4)}...${recipient.slice(-4)}` : "unknown",
+          time: "just now",
+          status: "fail",
+        },
+        ...prev,
+      ])
+      setTxMessage(mapped.message)
+    } finally {
+      setIsSending(false)
+    }
+  }
 
   if (!isAuthenticated) {
     return null
@@ -212,7 +339,12 @@ export default function WalletPage() {
                     </div>
                   </div>
 
-                  <button className="group/btn rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 transition-all hover:scale-105 hover:border-red-500/60 hover:bg-red-500/20 hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]">
+                  <button
+                    onClick={() => {
+                      logout()
+                    }}
+                    className="group/btn rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 transition-all hover:scale-105 hover:border-red-500/60 hover:bg-red-500/20 hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]"
+                  >
                     Disconnect
                   </button>
                 </div>
@@ -248,6 +380,7 @@ export default function WalletPage() {
                     <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full" />
                   </button>
                 </div>
+                {txMessage && <p className="mt-3 text-sm text-cyan-300">{txMessage}</p>}
               </div>
             </div>
           </div>
@@ -359,7 +492,13 @@ export default function WalletPage() {
                   >
                     {/* Timeline dot */}
                     <div
-                      className={`absolute left-4 top-6 h-4 w-4 rounded-full ${tx.status === "success" ? "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]" : "bg-yellow-500 shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-pulse"}`}
+                      className={`absolute left-4 top-6 h-4 w-4 rounded-full ${
+                        tx.status === "success"
+                          ? "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]"
+                          : tx.status === "pending"
+                            ? "bg-yellow-500 shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-pulse"
+                            : "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
+                      }`}
                     />
 
                     {/* Transaction card */}
@@ -450,6 +589,13 @@ export default function WalletPage() {
 
             <p className="mb-4 text-center text-sm text-gray-400">Scan QR code or copy wallet address to deposit</p>
 
+            <button
+              onClick={requestFriendbotFunding}
+              className="mb-4 w-full rounded-xl border border-blue-500/40 bg-blue-500/10 px-6 py-3 font-semibold text-blue-300 transition-all hover:bg-blue-500/20"
+            >
+              Fund Testnet Wallet (Friendbot)
+            </button>
+
             <div className="mb-6 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-3">
               <code className="flex-1 truncate text-sm text-blue-400">{address}</code>
               <button
@@ -489,6 +635,8 @@ export default function WalletPage() {
               <input
                 type="text"
                 placeholder="G..."
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
             </div>
@@ -498,6 +646,8 @@ export default function WalletPage() {
               <input
                 type="text"
                 placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
             </div>
@@ -509,8 +659,12 @@ export default function WalletPage() {
               >
                 Cancel
               </button>
-              <button className="flex-1 rounded-xl border border-purple-500/50 bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-semibold text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all hover:shadow-[0_0_40px_rgba(124,58,237,0.5)]">
-                Confirm
+              <button
+                onClick={sendXlm}
+                disabled={isSending}
+                className="flex-1 rounded-xl border border-purple-500/50 bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-semibold text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all hover:shadow-[0_0_40px_rgba(124,58,237,0.5)] disabled:opacity-60"
+              >
+                {isSending ? "Sending..." : "Confirm"}
               </button>
             </div>
           </div>

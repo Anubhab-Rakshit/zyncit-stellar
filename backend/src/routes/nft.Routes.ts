@@ -5,6 +5,8 @@ import { keccak256 } from "js-sha3"; // ✅ proper Ethereum-compatible Keccak ha
 import { uploadToPinata } from "../utils/pinataUpload";
 import { uploadContentToBlockchain } from "../web3/uploadContent";
 import { walletProtect } from "../middlewares/walletAuthMiddleware";
+import { buyNFT } from "../web3/buyNFT";
+import { classifyWalletTxError } from "../utils/stellarError";
 
 const router = Router();
 const upload = multer({ dest: "uploads/" });
@@ -44,6 +46,46 @@ router.post("/upload-content", walletProtect, upload.single("file"), async (req,
     console.error(error);
     if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path); // safe cleanup on error
     res.status(500).json({ message: "Upload error", error });
+  }
+});
+
+router.post("/buy", walletProtect, async (req, res) => {
+  try {
+    const { tokenId, priceInXLM } = req.body as { tokenId?: number; priceInXLM?: string };
+
+    if (!tokenId || !priceInXLM) {
+      return res.status(400).json({
+        success: false,
+        errorCode: "UNKNOWN",
+        message: "tokenId and priceInXLM are required",
+      });
+    }
+
+    const result = await buyNFT(tokenId, priceInXLM);
+
+    if (!result.success) {
+      const errorCode = classifyWalletTxError(result.error);
+      return res.status(500).json({
+        success: false,
+        errorCode,
+        message: "NFT purchase failed",
+        detail: result.error,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      txHash: result.txHash,
+      buyer: result.buyer,
+    });
+  } catch (error) {
+    const errorCode = classifyWalletTxError(error);
+    return res.status(500).json({
+      success: false,
+      errorCode,
+      message: "NFT purchase failed",
+      detail: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 });
 

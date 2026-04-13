@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { ExternalLink, Share2, Heart, ArrowLeft, Check } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
+import { mapWalletError } from "@/lib/errors"
+import { cacheGet, cacheSet } from "@/lib/cache"
 
 interface NFT {
   _id: string
@@ -24,11 +26,19 @@ export default function PostDetail({ postId }: { postId: string }) {
   const [nft, setNft] = useState<NFT | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [purchaseStatus, setPurchaseStatus] = useState<"idle" | "pending" | "success" | "fail">("idle")
+  const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const fetchNFT = async () => {
       try {
+        const cached = cacheGet<NFT>(`zync_cache_nft_${postId}`)
+        if (cached) {
+          setNft(cached)
+          setLoading(false)
+        }
+
         console.log("[v0] Fetching NFT with ID:", postId)
         const response = await fetch("/api/nfts/all")
         const data = await response.json()
@@ -51,6 +61,18 @@ export default function PostDetail({ postId }: { postId: string }) {
                   ? profileData.user.name
                   : `${found.owner.slice(0, 6)}...${found.owner.slice(-4)}`,
             })
+
+            cacheSet(
+              `zync_cache_nft_${postId}`,
+              {
+                ...found,
+                artistName:
+                  profileData.success && profileData.user?.name
+                    ? profileData.user.name
+                    : `${found.owner.slice(0, 6)}...${found.owner.slice(-4)}`,
+              },
+              60_000,
+            )
           } else {
             console.log("[v0] NFT not found with ID:", postId)
           }
@@ -86,6 +108,61 @@ export default function PostDetail({ postId }: { postId: string }) {
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const buyNow = async () => {
+    if (!nft) return
+    const token = localStorage.getItem("zync_token")
+    if (!token) {
+      setPurchaseStatus("fail")
+      setPurchaseMessage("Please authenticate to purchase this NFT")
+      return
+    }
+
+    setPurchaseStatus("pending")
+    setPurchaseMessage("Submitting purchase transaction...")
+
+    try {
+      const response = await fetch("/api/nft/buy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          tokenId: Number(nft.tokenId),
+          priceInXLM: "1",
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || data.detail || "Purchase failed")
+      }
+
+      const txHash = data.txHash as string
+      let finalStatus: "pending" | "success" | "fail" = "pending"
+
+      for (let i = 0; i < 15; i += 1) {
+        const statusRes = await fetch(`/api/tx/status/${txHash}`)
+        const statusData = await statusRes.json()
+        finalStatus = statusData.status ?? "pending"
+        if (finalStatus !== "pending") break
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+      }
+
+      if (finalStatus === "success") {
+        setPurchaseStatus("success")
+        setPurchaseMessage(`Purchase confirmed: ${txHash.slice(0, 10)}...`)
+      } else {
+        setPurchaseStatus("fail")
+        setPurchaseMessage("Purchase transaction failed")
+      }
+    } catch (error) {
+      const mapped = mapWalletError(error)
+      setPurchaseStatus("fail")
+      setPurchaseMessage(mapped.message)
+    }
   }
 
   if (loading) {
@@ -150,6 +227,13 @@ export default function PostDetail({ postId }: { postId: string }) {
                 {/* Action Buttons */}
                 <div className="flex gap-4 mt-6">
                   <button
+                    onClick={buyNow}
+                    disabled={purchaseStatus === "pending"}
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-green-600 to-cyan-600 text-white font-semibold hover:scale-105 transition-transform disabled:opacity-70"
+                  >
+                    {purchaseStatus === "pending" ? "Buying..." : "Buy (1 XLM)"}
+                  </button>
+                  <button
                     onClick={sharePost}
                     className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:scale-105 transition-transform"
                   >
@@ -160,6 +244,19 @@ export default function PostDetail({ postId }: { postId: string }) {
                     <Heart className="w-5 h-5" />
                   </button>
                 </div>
+                {purchaseMessage && (
+                  <p
+                    className={`mt-3 text-sm ${
+                      purchaseStatus === "success"
+                        ? "text-green-400"
+                        : purchaseStatus === "fail"
+                          ? "text-red-400"
+                          : "text-yellow-300"
+                    }`}
+                  >
+                    {purchaseMessage}
+                  </p>
+                )}
               </div>
             </div>
 

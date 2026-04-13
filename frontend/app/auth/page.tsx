@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { Wallet, ExternalLink, Copy, Check, AlertCircle } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
-import { isAllowed, setAllowed, requestAccess, signMessage } from "@stellar/freighter-api"
+import { connectWallet, getSupportedWallets, getWalletNetwork, signWalletMessage } from "@/lib/wallet-kit"
+import { mapWalletError } from "@/lib/errors"
 
 type AuthStatus =
   | "detect"
@@ -33,6 +34,7 @@ export default function AuthPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const { login } = useAuth()
   const router = useRouter()
+  const [walletCount, setWalletCount] = useState(0)
 
   // Liquid light wave background animation
   useEffect(() => {
@@ -136,17 +138,21 @@ export default function AuthPage() {
 
   // Check for Freighter
   useEffect(() => {
-    const checkFreighter = async () => {
+    const detectWallets = async () => {
       try {
-        if (typeof window !== "undefined") {
-            setHasFreighter(true)
-            setStatus("connect")
-        }
+        if (typeof window === "undefined") return
+        const wallets = await getSupportedWallets()
+        const available = wallets.filter((wallet) => wallet.isAvailable)
+        setWalletCount(available.length)
+        setHasFreighter(available.length > 0)
+        setStatus(available.length > 0 ? "connect" : "detect")
       } catch (error) {
         console.error("Freighter detection error", error)
+        setHasFreighter(false)
+        setStatus("detect")
       }
     }
-    checkFreighter()
+    detectWallets()
   }, [])
 
   const addToast = (message: string, type: "error" | "success") => {
@@ -164,20 +170,26 @@ export default function AuthPage() {
   const handleConnect = async () => {
     setStatus("connecting")
     try {
-      const allowed = await setAllowed()
-      if (!allowed) throw new Error("Connection declined")
-
-      const result = await requestAccess()
-      const publicKey = typeof result === "string" ? result : result.address
+      const result = await connectWallet()
+      const publicKey = result.address
       
       if (!publicKey) throw new Error("No address returned")
+
+      const walletNetwork = await getWalletNetwork()
+      if (walletNetwork.networkPassphrase !== "Test SDF Network ; September 2015") {
+        setStatus("wrong-network")
+        addToast("Please switch wallet network to Stellar Testnet", "error")
+        setTimeout(() => setStatus("connect"), 2000)
+        return
+      }
 
       setAddress(publicKey)
       setStatus("sign")
       addToast("Wallet connected!", "success")
-    } catch (error: any) {
+    } catch (error) {
+      const mapped = mapWalletError(error)
       setStatus("error")
-      addToast(error.message || "Connection rejected", "error")
+      addToast(mapped.message || "Connection rejected", "error")
       setTimeout(() => setStatus("connect"), 2000)
     }
   }
@@ -188,8 +200,7 @@ export default function AuthPage() {
       const timestamp = new Date().toISOString()
       const message = `Login verification at ${timestamp}`
 
-      const signResponse = await signMessage(message)
-      if (signResponse.error) throw new Error(signResponse.error)
+      const signResponse = await signWalletMessage(message, address ?? undefined)
 
       setStatus("verifying")
 
@@ -218,9 +229,10 @@ export default function AuthPage() {
       } else {
         throw new Error(data.message || "Verification failed")
       }
-    } catch (error: any) {
+    } catch (error) {
+      const mapped = mapWalletError(error)
       setStatus("error")
-      addToast(error.message || "Signature declined", "error")
+      addToast(mapped.message || "Signature declined", "error")
       setTimeout(() => setStatus("sign"), 2000)
     }
   }
@@ -337,15 +349,15 @@ export default function AuthPage() {
                   </div>
                   <h2 className="text-2xl font-semibold text-white">Connect Wallet</h2>
                   <p className="text-sm text-gray-400">
-                    Connect your Freighter wallet to access your decentralized content universe.
-                  </p>
+                     Connect your Stellar wallet to access your decentralized content universe.
+                   </p>
 
                   <button
                     onClick={handleConnect}
                     className="group/btn relative w-full overflow-hidden rounded-xl border border-blue-500/50 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4 font-semibold text-white shadow-[0_0_20px_rgba(0,212,255,0.3)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                    aria-label="Connect Freighter wallet"
+                    aria-label="Connect Stellar wallet"
                   >
-                    <span className="relative z-10">Connect Freighter</span>
+                    <span className="relative z-10">Connect Wallet ({walletCount})</span>
                     <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full" />
                   </button>
                 </div>

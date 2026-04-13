@@ -1,6 +1,8 @@
 #![no_std]
 
-use soroban_sdk::{contract, contracterror, contractimpl, Address, Env, Map};
+use soroban_sdk::{
+    contract, contracterror, contractimpl, vec, Address, Env, IntoVal, Map, Symbol, Val,
+};
 
 const ESCROWS_KEY: u32 = 0;
 const NEXT_ID_KEY: u32 = 1;
@@ -76,4 +78,40 @@ impl PaymentEscrow {
     ) -> Result<u64, Error> {
         Self::create_escrow(env, sender, recipient, amount, asset, 0)
     }
+
+    pub fn instant_settle_with_royalty(
+        env: Env,
+        sender: Address,
+        recipient: Address,
+        amount: i128,
+        asset: Address,
+        royalty_contract: Address,
+        token_id: u128,
+    ) -> Result<(u64, i128), Error> {
+        let payment_id = Self::create_escrow(
+            env.clone(),
+            sender,
+            recipient,
+            amount,
+            asset,
+            0,
+        )?;
+
+        let royalty_args: soroban_sdk::Vec<Val> = vec![
+            &env,
+            token_id.into_val(&env),
+            amount.into_val(&env)
+        ];
+
+        let royalty_amount: i128 = env.invoke_contract(
+            &royalty_contract,
+            &Symbol::new(&env, "distribute_royalty"),
+            royalty_args,
+        );
+
+        Ok((payment_id, royalty_amount))
+    }
 }
+
+#[cfg(test)]
+mod test;

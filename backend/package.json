@@ -21,7 +21,8 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "start": "cross-env NODE_ENV=production tsx src/index.ts"
+    "start": "cross-env NODE_ENV=production tsx src/index.ts",
+    "test": "npm run build && node --test dist/__tests__/**/*.js"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",

@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import walletRoutes from "./routes/wallet.Routes";
 import uploadRoutes from "./routes/upload.Routes";
 import metadataRoutes from "./routes/metadata.Routes";
+import nftRoutes from "./routes/nft.Routes";
+import txRoutes from "./routes/tx.Routes";
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use(morgan("dev"));
 app.use("/api/wallet", walletRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/nft", metadataRoutes);
+app.use("/api/nft", nftRoutes);
+app.use("/api/tx", txRoutes);
 
 
 

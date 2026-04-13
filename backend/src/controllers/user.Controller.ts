@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/user.models";
+import { emitPlatformEvent } from "../services/eventBus";
 
 // 🧠 Controller to update user profile
 export const updateUserProfile = async (req: Request, res: Response) => {
@@ -16,6 +17,16 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    emitPlatformEvent("profile_updated", {
+      address,
+      fields: {
+        name: user.name ?? "",
+        email: user.email ?? "",
+        avatar: user.avatar ?? "",
+        bio: user.bio ?? "",
+      },
+    });
 
     res.json({ message: "Profile updated successfully", user });
   } catch (error) {
