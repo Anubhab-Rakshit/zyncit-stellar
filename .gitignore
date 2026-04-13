@@ -44,3 +44,4 @@ pnpm-debug.log*
 SPEC.md
 DEPLOYMENT.md   
 
+\n# Build / Uploads\nbackend/dist/\nbackend/uploads/
