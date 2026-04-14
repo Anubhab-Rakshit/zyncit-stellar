@@ -1,21 +1,25 @@
 {
   "name": "zyncit-backend",
   "version": "1.0.0",
-  "description": "commit from Rupam",
+  "description": "Backend service for ZYNC - Decentralized Content Publishing Platform on Stellar.",
   "keywords": [
-    "backend",
-    "web3"
+    "stellar",
+    "soroban",
+    "web3",
+    "publishing",
+    "decentralized"
+    
   ],
-  "homepage": "https://github.com/Anubhab-Rakshit/pitchhackers#readme",
+  "homepage": "https://github.com/Anubhab-Rakshit/zyncit-stellar#readme",
   "bugs": {
-    "url": "https://github.com/Anubhab-Rakshit/pitchhackers/issues"
+    "url": "https://github.com/Anubhab-Rakshit/zyncit-stellar/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Anubhab-Rakshit/pitchhackers.git"
+    "url": "git+https://github.com/Anubhab-Rakshit/zyncit-stellar.git"
   },
-  "license": "ISC",
-  "author": "rupamghosh2006, donendosted",
+  "license": "MIT",
+  "author": "Anubhab Rakshit",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
