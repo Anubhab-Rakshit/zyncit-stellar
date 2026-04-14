@@ -1,13 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
-import { keccak256 } from "js-sha3"; // ✅ proper Ethereum-compatible Keccak hashing
+import pkg from "js-sha3";
+const { keccak256 } = pkg; // ✅ proper Ethereum-compatible Keccak hashing
+
 import { uploadToPinata } from "../utils/pinataUpload";
 import { uploadContentToBlockchain } from "../web3/uploadContent";
 import { walletProtect } from "../middlewares/walletAuthMiddleware";
 import { buyNFT } from "../web3/buyNFT";
 import { classifyWalletTxError } from "../utils/stellarError";
-
 const router = Router();
 const upload = multer({ dest: "uploads/" });
 
