@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import pkg from "js-sha3";
-const { keccak256 } = pkg; // ✅ proper Ethereum-compatible Keccak hashing
+const { keccak256 } = pkg; // ✅ standard Keccak-256 hashing
 
 import { uploadToPinata } from "../utils/pinataUpload";
 import { uploadContentToBlockchain } from "../web3/uploadContent";

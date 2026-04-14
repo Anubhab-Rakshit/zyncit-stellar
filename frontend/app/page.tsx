@@ -444,7 +444,7 @@ export default function HomePage() {
                         _id: "demo1",
                         name: "The Future of Web3",
                         artistName: "Alex Morgan",
-                        price: "0.5 ETH",
+                        price: "0.5 XLM",
                         tokenId: "#7821",
                         imageURL: "/futuristic-article-web3.jpg",
                         owner: "0xabc...", // Dummy owner
@@ -454,7 +454,7 @@ export default function HomePage() {
                         _id: "demo2",
                         name: "Digital Symphony #42",
                         artistName: "Aria Soundwave",
-                        price: "1.2 ETH",
+                        price: "1.2 XLM",
                         tokenId: "#4392",
                         imageURL: "/placeholder.svg?key=music42",
                         owner: "0xdef...", // Dummy owner
@@ -464,7 +464,7 @@ export default function HomePage() {
                         _id: "demo3",
                         name: "Neon Dreams",
                         artistName: "Pixel Master",
-                        price: "2.8 ETH",
+                        price: "2.8 XLM",
                         tokenId: "#1156",
                         imageURL: "/placeholder.svg?key=art1156",
                         owner: "0xghi...", // Dummy owner
@@ -474,7 +474,7 @@ export default function HomePage() {
                         _id: "demo4",
                         name: "Metaverse Journey",
                         artistName: "Chris Director",
-                        price: "1.5 ETH",
+                        price: "1.5 XLM",
                         tokenId: "#9483",
                         imageURL: "/placeholder.svg?key=video9483",
                         owner: "0xjkl...", // Dummy owner
@@ -484,7 +484,7 @@ export default function HomePage() {
                         _id: "demo5",
                         name: "DeFi Revolution 2025",
                         artistName: "Sarah Crypto",
-                        price: "0.8 ETH",
+                        price: "0.8 XLM",
                         tokenId: "#6274",
                         imageURL: "/placeholder.svg?key=article6274",
                         owner: "0xmnp...", // Dummy owner
@@ -494,7 +494,7 @@ export default function HomePage() {
                         _id: "demo6",
                         name: "Blockchain Beats Vol.3",
                         artistName: "DJ Decentralized",
-                        price: "1.0 ETH",
+                        price: "1.0 XLM",
                         tokenId: "#3891",
                         imageURL: "/placeholder.svg?key=music3891",
                         owner: "0xstu...", // Dummy owner
@@ -504,7 +504,7 @@ export default function HomePage() {
                         _id: "demo7",
                         name: "Abstract Protocol",
                         artistName: "Neo Artist",
-                        price: "3.5 ETH",
+                        price: "3.5 XLM",
                         tokenId: "#2047",
                         imageURL: "/placeholder.svg?key=art2047",
                         owner: "0vwx...", // Dummy owner
@@ -514,7 +514,7 @@ export default function HomePage() {
                         _id: "demo8",
                         name: "Smart Contract Tutorial",
                         artistName: "Dev Academy",
-                        price: "0.3 ETH",
+                        price: "0.3 XLM",
                         tokenId: "#8219",
                         imageURL: "/placeholder.svg?key=video8219",
                         owner: "0xyz...", // Dummy owner
@@ -702,12 +702,12 @@ export default function HomePage() {
                   <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#dc2626]" />
                     <span className="font-[family-name:var(--font-display)] text-xl font-bold text-white tracking-wider">
-                      {"CREDA DASHBOARD"}
+                      {"ZYNCIT DASHBOARD"}
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="px-4 py-2 rounded-lg bg-[#3b82f6]/20 border border-[#3b82f6]/40 text-[#3b82f6] text-sm font-mono">
-                      {"0x7a9f...3c2d"}
+                      {"GC6P...7H2W"}
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3b82f6] to-[#0284c7]" />
                   </div>
@@ -742,7 +742,7 @@ export default function HomePage() {
                   {/* Quick stats */}
                   <div className="space-y-4">
                     {[
-                      { label: "Today's Earnings", value: "4.2 ETH", color: "#3b82f6", change: "+12%" },
+                      { label: "Today's Earnings", value: "4.2 XLM", color: "#3b82f6", change: "+12%" },
                       { label: "Total Views", value: "128K", color: "#0284c7", change: "+8%" },
                       { label: "Active Tokens", value: "47", color: "#dc2626", change: "+3" },
                     ].map((stat, i) => (
@@ -1272,7 +1272,7 @@ export default function HomePage() {
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder="your@email.eth"
+                    placeholder="your@email.com"
                     className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#0a0a0f] border border-white/10 rounded-xl text-sm sm:text-base text-white placeholder-gray-600 focus:border-[#3b82f6] focus:outline-none transition-all duration-300"
                   />
                   <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#dc2626] hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300">
