@@ -106,6 +106,22 @@ This repository now includes complete implementations for all stated learning le
 | **PaymentEscrow** | `CC565PKCVD7OODIUP37R3UWRSDVYVPTWAIDKF22D3GNF6WCIYTT4VCGY` |
 | **SubscriptionManager** | `CAPJ45XLMHCS75XDYCYJRGTVCXGFZM5FIGP2EBNV7A3C6WTL7COC5HC5` |
 | **ContentRegistry** | `CBODPDB5DDR624WR5AFY4ISLYBI5CE3ENFZRZTDAP4FC5M4O6VRX5XKX` |
+| **RoyaltyManager** | `CBUKJDKA2DSQ4HF5IGAQDUJJ7TLDU3C44ZNA3D7T2IKEFG77T7XMNITS` |
+| **PaymentEscrow** | `CC565PKCVD7OODIUP37R3UWRSDVYVPTWAIDKF22D3GNF6WCIYTT4VCGY` |
+| **SubscriptionManager** | `CAPJ45XLMHCS75XDYCYJRGTVCXGFZM5FIGP2EBNV7A3C6WTL7COC5HC5` |
+
+---
+
+## 🔗 Deployment Verification (Stellar Testnet)
+
+All core logic and contract deployments can be verified on the **Stellar Expert** explorer:
+
+| Contract | Deployment Transaction Hash | Explorer Link |
+| :--- | :--- | :--- |
+| **AccessControl** | `613ce04f66fe55baa26a1e01a62482f9097fefa11744eca61ce75a72ec440aec` | [Check TX](https://stellar.expert/explorer/testnet/tx/613ce04f66fe55baa26a1e01a62482f9097fefa11744eca61ce75a72ec440aec) |
+| **ContentNFT** | `fbed31b73a19bf82f7cc3a55d5d6acb85b2c82a3751728cc7b460ad9c8301061` | [Check TX](https://stellar.expert/explorer/testnet/tx/fbed31b73a19bf82f7cc3a55d5d6acb85b2c82a3751728cc7b460ad9c8301061) |
+| **ContentRegistry** | `5afb51098967c84459a5d3cd47798596292983d46a314cc54d9f33af087d2d7c` | [Check TX](https://stellar.expert/explorer/testnet/tx/5afb51098967c84459a5d3cd47798596292983d46a314cc54d9f33af087d2d7c) |
+| **RoyaltyManager** | `383a3e46ff068df29397fc25115d86f768fb8f3819af5a0898f4e9918cebe08b` | [Check TX](https://stellar.expert/explorer/testnet/tx/383a3e46ff068df29397fc25115d86f768fb8f3819af5a0898f4e9918cebe08b) |
 
 ---
 
