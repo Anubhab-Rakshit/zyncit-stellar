@@ -10,6 +10,8 @@ export interface INFT extends Document {
   imageURL: string;
   metadataURL: string;
   ipfsHash: string;
+  contentId?: string;
+  registryTxHash?: string;
   tokenId: string;
   txHash: string;
 }
@@ -30,6 +32,8 @@ const nftSchema = new Schema<INFT>(
     imageURL: { type: String, required: true },
     metadataURL: { type: String, required: true },
     ipfsHash: { type: String, required: true },
+    contentId: { type: String },
+    registryTxHash: { type: String },
     tokenId: { type: String, required: true },
     txHash: { type: String, required: true },
     

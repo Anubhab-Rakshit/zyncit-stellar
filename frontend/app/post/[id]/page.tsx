@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import PostDetail from "./post-detail"
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -8,7 +9,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   try {
     const { id } = await params
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+    const baseUrl = getBackendApiBaseUrl()
     const response = await fetch(`${baseUrl}/api/upload/find`)
     const data = await response.json()
 

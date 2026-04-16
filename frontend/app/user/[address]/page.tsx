@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { Calendar, ExternalLink } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
 
 interface User {
   _id: string
@@ -37,7 +38,7 @@ export default function UserProfilePage() {
     const fetchUserProfile = async () => {
       try {
         // Fetch user profile
-        const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://movers-honey-bids-shopzilla.trycloudflare.com"
+        const backendUrl = getBackendApiBaseUrl()
         const profileResponse = await fetch(`${backendUrl}/api/wallet/profile/${address}`)
         const profileData = await profileResponse.json()
 

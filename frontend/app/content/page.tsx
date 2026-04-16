@@ -477,7 +477,7 @@ export default function ContentLibraryPage() {
                             icon: TrendingUp,
                             angle: 270,
                             label: "Transaction",
-                            url: `https://sepolia.celoscan.io/tx/${nft.txHash}`,
+                            url: `https://stellar.expert/explorer/testnet/tx/${nft.txHash}`,
                           },
                         ].map((action, idx) => {
                           const radius = 120

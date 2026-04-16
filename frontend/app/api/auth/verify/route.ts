@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() 
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:5001"
+    const backendUrl = getBackendApiBaseUrl()
     const targetUrl = `${backendUrl}/api/wallet/verify`
     console.log(`🚀 Proxying verification request to: ${targetUrl}`)
     

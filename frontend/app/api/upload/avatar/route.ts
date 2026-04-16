@@ -1,3 +1,5 @@
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
+
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get("Authorization")
@@ -9,7 +11,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData()
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:5001"
+    const backendUrl = getBackendApiBaseUrl()
     const backendResponse = await fetch(`${backendUrl}/api/upload/avatar`, {
       method: "POST",
       body: formData,

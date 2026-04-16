@@ -1,6 +1,8 @@
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
+
 export async function GET() {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://movers-honey-bids-shopzilla.trycloudflare.com"
+    const backendUrl = getBackendApiBaseUrl()
     const response = await fetch(`${backendUrl}/api/upload/find`, { cache: 'no-store' })
     
     if (!response.ok) {

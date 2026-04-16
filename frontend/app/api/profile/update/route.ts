@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
 
 export async function PUT(request: NextRequest) {
   try {
@@ -9,7 +10,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://movers-honey-bids-shopzilla.trycloudflare.com"
+    const backendUrl = getBackendApiBaseUrl()
     const response = await fetch(`${backendUrl}/api/wallet/update-profile`, {
       method: "PUT",
       headers: {

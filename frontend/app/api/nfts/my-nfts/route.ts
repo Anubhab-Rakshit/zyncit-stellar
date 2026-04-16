@@ -1,3 +1,5 @@
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
+
 export async function GET(request: Request) {
   try {
     const authHeader = request.headers.get("authorization")
@@ -6,7 +8,7 @@ export async function GET(request: Request) {
       return Response.json({ success: false, message: "No authorization token" }, { status: 401 })
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://movers-honey-bids-shopzilla.trycloudflare.com"
+    const backendUrl = getBackendApiBaseUrl()
     const response = await fetch(`${backendUrl}/api/upload/my-nfts`, {
       headers: {
         Authorization: authHeader,

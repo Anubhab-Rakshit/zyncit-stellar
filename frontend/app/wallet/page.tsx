@@ -7,7 +7,8 @@ import { Copy, Check, Download, UploadIcon, ExternalLink, Shield, Key, Coins, Cl
 import { useRouter } from "next/navigation"
 import { Asset, Horizon, Networks, Operation, TransactionBuilder } from "@stellar/stellar-sdk"
 import { mapWalletError } from "@/lib/errors"
-import { getWalletAddress, signWalletTransaction } from "@/lib/wallet-kit"
+import { disconnectWallet, getWalletAddress, signWalletTransaction } from "@/lib/wallet-kit"
+import { getBackendApiBaseUrl } from "@/lib/backend-url"
 
 export default function WalletPage() {
   const { address, isAuthenticated, logout } = useAuth()
@@ -23,6 +24,16 @@ export default function WalletPage() {
   const [amount, setAmount] = useState("")
   const [transactions, setTransactions] = useState<Array<{ type: string; amount: string; party: string; time: string; status: "pending" | "success" | "fail"; txHash?: string }>>([])
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnectWallet()
+    } catch (_error) {
+      // Keep local logout resilient even if wallet extension disconnect fails.
+    } finally {
+      logout()
+    }
+  }
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -58,7 +69,7 @@ export default function WalletPage() {
 
   useEffect(() => {
     if (!address) return
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:5001"
+    const backendUrl = getBackendApiBaseUrl()
     const streamUrl = `${backendUrl}/api/tx/events/stream`
     const source = new EventSource(streamUrl)
 
@@ -340,9 +351,7 @@ export default function WalletPage() {
                   </div>
 
                   <button
-                    onClick={() => {
-                      logout()
-                    }}
+                    onClick={handleDisconnect}
                     className="group/btn rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 transition-all hover:scale-105 hover:border-red-500/60 hover:bg-red-500/20 hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]"
                   >
                     Disconnect
