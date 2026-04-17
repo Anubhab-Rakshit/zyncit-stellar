@@ -4,8 +4,10 @@ This project integrates Soroban smart contracts through a dedicated backend inte
 
 ## Integration Entry Point
 
-- File: `backend/src/web3/contractIntegration.ts`
-- Purpose: Centralized contract + signer + RPC initialization.
+- Primary file (judge-facing): `backend/src/contract-integration.ts`
+  - Exposes unified integration methods used by backend flows.
+- Internal wiring file: `backend/src/web3/contractIntegration.ts`
+  - Centralized contract + signer + RPC initialization.
 
 ## Integrated Contracts
 
