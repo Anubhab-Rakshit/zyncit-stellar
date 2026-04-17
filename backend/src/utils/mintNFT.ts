@@ -1,26 +1,22 @@
-import { Contract, rpc, Keypair, Networks, TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
+import { TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
 import dotenv from "dotenv";
 import { emitPlatformEvent } from "../services/eventBus";
 import { waitForTransactionFinality } from "../services/txTracker";
+import { getContractIntegration } from "../web3/contractIntegration";
 dotenv.config();
 
 export const mintNFT = async (to: string, metadataURL: string) => {
   try {
-    const rpcServer = new rpc.Server(process.env.RPC_URL!);
-    const accountKP = Keypair.fromSecret(process.env.PRIVATE_KEY!);
-    const sourceAccount = await rpcServer.getAccount(accountKP.publicKey());
-
-    const contractId = process.env.CONTRACT_ADDRESS_CONTENTNFT!;
-    const contract = new Contract(contractId);
+    const { rpcServer, signer, sourceAccount, networkPassphrase, contracts } = await getContractIntegration();
 
     console.log(`🔗 Minting NFT for ${to} ...`);
 
     const tx = new TransactionBuilder(sourceAccount, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase,
     })
       .addOperation(
-        contract.call("mint",
+        contracts.contentNft.call("mint",
           nativeToScVal(to, { type: "address" }),
           nativeToScVal(metadataURL, { type: "string" }),
           nativeToScVal(10, { type: "u32" })
@@ -30,7 +26,7 @@ export const mintNFT = async (to: string, metadataURL: string) => {
       .build();
 
     const preppedTx = await rpcServer.prepareTransaction(tx);
-    preppedTx.sign(accountKP);
+    preppedTx.sign(signer);
     const sendRes = await rpcServer.sendTransaction(preppedTx);
 
     console.log("🚀 TX sent:", sendRes.hash);

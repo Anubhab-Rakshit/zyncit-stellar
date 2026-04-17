@@ -77,6 +77,7 @@ Note: Real-time buyer/seller settlement beyond current prototype scope is intent
 - Frontend: Next.js + TypeScript (`frontend/`)
 - Backend: Express + TypeScript (`backend/`)
 - Contracts: Soroban Rust contracts (`contracts/`)
+- Contract integration layer: `backend/src/web3/contractIntegration.ts` (details in `CONTRACT_INTEGRATION.md`)
 - DB: MongoDB
 - Storage: Pinata/IPFS
 - Wallet: Freighter and StellarWalletsKit

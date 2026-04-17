@@ -1,6 +1,7 @@
-import { Contract, rpc, Keypair, Networks, TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
+import { TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
 import { emitPlatformEvent } from "../services/eventBus";
 import { waitForTransactionFinality } from "../services/txTracker";
+import { getContractIntegration } from "./contractIntegration";
 
 interface BuyNftArgs {
   tokenId: number;
@@ -11,13 +12,7 @@ interface BuyNftArgs {
 
 export const buyNFT = async ({ tokenId, priceInXLM, buyerAddress, sellerAddress }: BuyNftArgs) => {
   try {
-    const rpcServer = new rpc.Server(process.env.RPC_URL!);
-    const accountKP = Keypair.fromSecret(process.env.PRIVATE_KEY!);
-    const sourceAccount = await rpcServer.getAccount(accountKP.publicKey());
-
-    const paymentEscrowContractId = process.env.CONTRACT_ADDRESS_PAYMENTESCROW!;
-    const royaltyManagerContractId = process.env.CONTRACT_ADDRESS_ROYALTYMANAGER!;
-    const contract = new Contract(paymentEscrowContractId);
+    const { rpcServer, signer, sourceAccount, networkPassphrase, contractIds, contracts } = await getContractIntegration();
     const stroops = Math.round(Number(priceInXLM) * 1e7);
 
     if (!Number.isFinite(stroops) || stroops <= 0) {
@@ -29,16 +24,16 @@ export const buyNFT = async ({ tokenId, priceInXLM, buyerAddress, sellerAddress 
 
     const tx = new TransactionBuilder(sourceAccount, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase,
     })
       .addOperation(
-        contract.call(
+        contracts.paymentEscrow.call(
           "instant_settle_with_royalty",
           nativeToScVal(buyerAddress, { type: "address" }),
           nativeToScVal(sellerAddress, { type: "address" }),
           nativeToScVal(stroops, { type: "i128" }),
-          nativeToScVal(accountKP.publicKey(), { type: "address" }),
-          nativeToScVal(royaltyManagerContractId, { type: "address" }),
+          nativeToScVal(signer.publicKey(), { type: "address" }),
+          nativeToScVal(contractIds.royaltyManager, { type: "address" }),
           nativeToScVal(tokenId, { type: "u128" })
         )
       )
@@ -46,7 +41,7 @@ export const buyNFT = async ({ tokenId, priceInXLM, buyerAddress, sellerAddress 
       .build();
 
     const preppedTx = await rpcServer.prepareTransaction(tx);
-    preppedTx.sign(accountKP);
+    preppedTx.sign(signer);
     const sendRes = await rpcServer.sendTransaction(preppedTx);
 
     const finality = await waitForTransactionFinality(rpcServer, sendRes.hash, {

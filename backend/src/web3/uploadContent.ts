@@ -1,6 +1,7 @@
-import { Contract, rpc, Keypair, Networks, TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
+import { TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
 import { emitPlatformEvent } from "../services/eventBus";
 import { waitForTransactionFinality } from "../services/txTracker";
+import { getContractIntegration } from "./contractIntegration";
 
 export const uploadContentToBlockchain = async (
   cid: string,
@@ -9,20 +10,15 @@ export const uploadContentToBlockchain = async (
   paymentToken: string = ""
 ) => {
   try {
-    const rpcServer = new rpc.Server(process.env.RPC_URL!);
-    const accountKP = Keypair.fromSecret(process.env.PRIVATE_KEY!);
-    const sourceAccount = await rpcServer.getAccount(accountKP.publicKey());
-
-    const contractId = process.env.CONTRACT_ADDRESS_CONTENTREGISTRY!;
-    const contract = new Contract(contractId);
+    const { rpcServer, signer, sourceAccount, networkPassphrase, contracts } = await getContractIntegration();
 
     const tx = new TransactionBuilder(sourceAccount, {
       fee: BASE_FEE,
-      networkPassphrase: Networks.TESTNET,
+      networkPassphrase,
     })
       .addOperation(
-        contract.call("register_content",
-          nativeToScVal(accountKP.publicKey(), { type: "address" }),
+        contracts.contentRegistry.call("register_content",
+          nativeToScVal(signer.publicKey(), { type: "address" }),
           nativeToScVal(fileHash, { type: "string" }),
           nativeToScVal(cid, { type: "string" })
         )
@@ -31,7 +27,7 @@ export const uploadContentToBlockchain = async (
       .build();
 
     const preppedTx = await rpcServer.prepareTransaction(tx);
-    preppedTx.sign(accountKP);
+    preppedTx.sign(signer);
     const sendRes = await rpcServer.sendTransaction(preppedTx);
 
     const finality = await waitForTransactionFinality(rpcServer, sendRes.hash, {
