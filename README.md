@@ -35,6 +35,17 @@ Based on user feedback, completed upgrades include:
 - NFT image rendering fixes across gallery/marketplace/profile flows.
 - Profile personalization (banner/accent/showcase title) and owned-NFTs profile section.
 - Mint reliability and clearer failure handling in upload/mint pipeline.
+- Buy/sell marketplace flow implemented and connected to escrow-backed backend route.
+- Dashboard visual stability improvements to reduce glitchy transitions.
+- Homepage NFT section connected to live backend NFTs (replacing static mock cards).
+
+### Raw User Feedback Captured
+
+- "The Image is Not Displayed when I am Minting an Nft that should be fixed in the next version. The UI is Awesome"
+- "My personal profile could be really a nice part of me therefore to display what I own and a way to design it my way would be great"
+- "To buy and sell nft"
+- "It is good but can't see picture in nft and also the dashboard is a bit glitchy"
+- "In the main page, NFT mocks should be replaced"
 
 ## Next Phase Improvement Plan
 
@@ -45,9 +56,9 @@ Based on user feedback, completed upgrades include:
 
 Improvement commit links:
 
+- [f5279bc](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/f5279bc)
 - [edd6af9](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/edd6af9)
 - [24255f8](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/24255f8)
-- [96cec83](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/96cec83)
 
 ## What Is Fully Integrated Now
 
