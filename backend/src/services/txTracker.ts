@@ -46,12 +46,14 @@ export const waitForTransactionFinality = async (
         };
       }
 
-      if (
-        tx.status === rpc.Api.GetTransactionStatus.FAILED ||
-        tx.status === rpc.Api.GetTransactionStatus.NOT_FOUND
-      ) {
+      if (tx.status === rpc.Api.GetTransactionStatus.FAILED) {
         emitTxStatus(txHash, "fail", context);
         return { status: "fail" };
+      }
+
+      if (tx.status === rpc.Api.GetTransactionStatus.NOT_FOUND) {
+        await sleep(1500);
+        continue;
       }
     } catch (_error) {
       // Keep polling and let timeout determine failure.

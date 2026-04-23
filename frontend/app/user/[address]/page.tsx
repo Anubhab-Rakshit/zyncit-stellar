@@ -6,6 +6,7 @@ import { Calendar, ExternalLink } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
 import { getBackendApiBaseUrl } from "@/lib/backend-url"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface User {
   _id: string
@@ -14,6 +15,9 @@ interface User {
   avatar: string
   bio: string
   email?: string
+  banner?: string
+  accentColor?: string
+  showcaseTitle?: string
   createdAt: string
 }
 
@@ -102,7 +106,16 @@ export default function UserProfilePage() {
       <main className="relative min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
-          <div className="glass rounded-3xl p-8 mb-12 shadow-2xl">
+          <div className="glass rounded-3xl p-0 mb-12 shadow-2xl overflow-hidden">
+            <div
+              className="h-40 w-full"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${user.accentColor || "#3b82f6"}66, #0a0a0f), url('${resolveMediaUrl(user.banner)}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <div className="p-8">
             <div className="flex flex-col md:flex-row items-center gap-8">
               {/* Avatar */}
               <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/30 shadow-2xl flex-shrink-0">
@@ -118,6 +131,9 @@ export default function UserProfilePage() {
               {/* Info */}
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-4xl font-black text-white mb-2">{user.name}</h1>
+                <p className="text-sm uppercase tracking-[0.2em] mb-2" style={{ color: user.accentColor || "#3b82f6" }}>
+                  {user.showcaseTitle || "My Creation Vault"}
+                </p>
                 <p className="text-blue-400 font-mono text-sm mb-4">
                   {user.address.slice(0, 10)}...{user.address.slice(-8)}
                 </p>
@@ -135,11 +151,12 @@ export default function UserProfilePage() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
 
           {/* NFTs Grid */}
           <div>
-            <h2 className="text-3xl font-black text-white mb-8">Created NFTs</h2>
+            <h2 className="text-3xl font-black text-white mb-8">{user.showcaseTitle || "Created NFTs"}</h2>
 
             {nfts.length === 0 ? (
               <div className="text-center text-gray-400 py-20">
@@ -158,9 +175,12 @@ export default function UserProfilePage() {
                     <div className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300">
                       <div className="relative aspect-square rounded-xl overflow-hidden mb-3 shadow-lg">
                         <img
-                          src={nft.imageURL || "/placeholder.svg"}
+                          src={resolveMediaUrl(nft.imageURL)}
                           alt={nft.name}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg"
+                          }}
                         />
                       </div>
 

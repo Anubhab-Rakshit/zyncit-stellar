@@ -22,8 +22,13 @@ export async function POST(request: Request) {
     })
 
     if (!backendResponse.ok) {
+      const contentType = backendResponse.headers.get("content-type")
+      if (contentType?.includes("application/json")) {
+        const errorJson = await backendResponse.json()
+        return Response.json(errorJson, { status: backendResponse.status })
+      }
       const error = await backendResponse.text()
-      return Response.json({ error: error || "Upload failed" }, { status: backendResponse.status })
+      return Response.json({ success: false, message: error || "Upload failed" }, { status: backendResponse.status })
     }
 
     const data = await backendResponse.json()

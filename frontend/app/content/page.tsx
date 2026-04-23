@@ -6,6 +6,7 @@ import { Search, Filter, FileText, ImageIcon, Clock, TrendingUp, ExternalLink, S
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import { useAuth } from "@/lib/auth-context"
 import { cacheGet, cacheSet } from "@/lib/cache"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface NFT {
   _id: string
@@ -365,9 +366,12 @@ export default function ContentLibraryPage() {
                         }}
                       >
                         <img
-                          src={nft.imageURL || "/placeholder.svg"}
+                          src={resolveMediaUrl(nft.imageURL)}
                           alt={nft.name}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg"
+                          }}
                         />
 
                         <div
@@ -545,9 +549,12 @@ export default function ContentLibraryPage() {
                         }}
                       >
                         <img
-                          src={nft.imageURL || "/placeholder.svg"}
+                          src={resolveMediaUrl(nft.imageURL)}
                           alt={nft.name}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg"
+                          }}
                         />
                       </div>
 

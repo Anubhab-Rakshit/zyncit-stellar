@@ -5,6 +5,7 @@ import { Zap, Users, Coins, Globe, ArrowRight, Network, Hexagon } from "lucide-r
 import LoadingAnimation from "@/components/loading-animation"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import AnimatedBackground from "@/components/animated-background"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface NFT {
   _id: string
@@ -546,11 +547,14 @@ export default function HomePage() {
                         {/* Content preview area with real image */}
                         <div className="relative h-48 overflow-hidden">
                           {isReal ? (
-                            <img
-                              src={item.imageURL || "/placeholder.svg"}
-                              alt={item.name}
-                              className="w-full h-full object-cover"
-                            />
+                              <img
+                                src={resolveMediaUrl(item.imageURL)}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = "/placeholder.svg"
+                                }}
+                              />
                           ) : (
                             <>
                               <div

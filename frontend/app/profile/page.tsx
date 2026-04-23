@@ -6,13 +6,27 @@ import { useState, useEffect, useRef } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import IdentityMatrixBackground from "@/components/identity-matrix-background"
-import { Upload, Save, RotateCcw, CheckCircle, AlertCircle, User, Mail, FileText, ImageIcon } from "lucide-react"
+import { Upload, Save, RotateCcw, CheckCircle, AlertCircle, User, Mail, FileText, ImageIcon, ExternalLink } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
+import { resolveMediaUrl } from "@/lib/media"
 interface ProfileData {
   name: string
   email: string
   avatar: string
   bio: string
+  banner: string
+  accentColor: string
+  showcaseTitle: string
+}
+
+interface OwnedNFT {
+  _id: string
+  name: string
+  description: string
+  imageURL: string
+  tokenId: string
+  txHash: string
+  createdAt: string
 }
 
 export default function ProfilePage() {
@@ -23,12 +37,18 @@ export default function ProfilePage() {
     email: "",
     avatar: "",
     bio: "",
+    banner: "",
+    accentColor: "#3b82f6",
+    showcaseTitle: "My Creation Vault",
   })
   const [initialData, setInitialData] = useState<ProfileData>({
     name: "",
     email: "",
     avatar: "",
     bio: "",
+    banner: "",
+    accentColor: "#3b82f6",
+    showcaseTitle: "My Creation Vault",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -37,6 +57,8 @@ export default function ProfilePage() {
   const [isDragging, setIsDragging] = useState(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string>("")
+  const [ownedNfts, setOwnedNfts] = useState<OwnedNFT[]>([])
+  const [nftsLoading, setNftsLoading] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -53,6 +75,9 @@ export default function ProfilePage() {
             email: data.user.email || "",
             avatar: data.user.avatar || "",
             bio: data.user.bio || "",
+            banner: data.user.banner || "",
+            accentColor: data.user.accentColor || "#3b82f6",
+            showcaseTitle: data.user.showcaseTitle || "My Creation Vault",
           }
           setFormData(profileData)
           setInitialData(profileData)
@@ -68,6 +93,38 @@ export default function ProfilePage() {
       fetchProfileData()
     }
   }, [isAuthenticated, address])
+
+  useEffect(() => {
+    const fetchOwnedNfts = async () => {
+      if (!isAuthenticated || !token) {
+        setOwnedNfts([])
+        setNftsLoading(false)
+        return
+      }
+
+      try {
+        setNftsLoading(true)
+        const response = await fetch("/api/nfts/my-nfts", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        const data = await response.json()
+        if (response.ok && data.success) {
+          setOwnedNfts(data.data || [])
+        } else {
+          setOwnedNfts([])
+        }
+      } catch (_error) {
+        setOwnedNfts([])
+      } finally {
+        setNftsLoading(false)
+      }
+    }
+
+    fetchOwnedNfts()
+  }, [isAuthenticated, token])
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -179,6 +236,8 @@ export default function ProfilePage() {
       }
 
       setInitialData(formData)
+      setFormData((prev) => ({ ...prev, avatar: avatarUrl }))
+      setAvatarPreview(avatarUrl)
 
       setShowSuccess(true)
       setTimeout(() => {
@@ -224,6 +283,34 @@ export default function ProfilePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto">
+        <div className="mb-8 rounded-3xl border border-white/10 p-4 md:p-6" style={{ background: "rgba(10,10,15,0.55)" }}>
+          <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">Profile Preview</p>
+          <div className="overflow-hidden rounded-2xl border border-white/10">
+            <div
+              className="h-28 w-full"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${formData.accentColor}66, #0a0a0f), url('${resolveMediaUrl(formData.banner)}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <div className="-mt-10 flex items-end gap-4 p-4 md:p-6">
+              <img
+                src={resolveMediaUrl(avatarPreview || formData.avatar)}
+                alt="Preview avatar"
+                className="h-20 w-20 rounded-full border-4 border-[#0a0a0f] object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg"
+                }}
+              />
+              <div>
+                <h3 className="text-xl font-bold text-white">{formData.name || "Your Name"}</h3>
+                <p className="text-sm text-gray-400">{formData.showcaseTitle || "My Creation Vault"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
           <div className="space-y-6 animate-in fade-in slide-in-from-left duration-700 delay-100">
             <div className="glass rounded-3xl p-6 md:p-8 group hover:border-[#3b82f6]/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)]">
@@ -251,9 +338,12 @@ export default function ProfilePage() {
                 >
                   {avatarPreview ? (
                     <img
-                      src={avatarPreview || "/placeholder.svg"}
+                      src={resolveMediaUrl(avatarPreview)}
                       alt="Avatar"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg"
+                      }}
                     />
                   ) : (
                     <User className="w-20 h-20 text-gray-600" />
@@ -304,6 +394,23 @@ export default function ProfilePage() {
                 className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-[#3b82f6]/20 text-white text-lg focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/30 outline-none transition-all duration-300 hover:-translate-y-0.5"
               />
             </div>
+
+            <div className="glass rounded-3xl p-6 md:p-8 hover:border-[#3b82f6]/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00d4ff] to-[#7c3aed] flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-[family-name:var(--font-display)] font-bold text-white">Banner URL</h2>
+              </div>
+              <input
+                type="text"
+                name="banner"
+                value={formData.banner}
+                onChange={handleInputChange}
+                placeholder="https://... or ipfs://..."
+                className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-[#3b82f6]/20 text-white text-lg focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/30 outline-none transition-all duration-300 hover:-translate-y-0.5"
+              />
+            </div>
           </div>
 
           <div className="space-y-6 animate-in fade-in slide-in-from-right duration-700 delay-200">
@@ -322,6 +429,48 @@ export default function ProfilePage() {
                 placeholder="your.email@example.com"
                 className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-[#7c3aed]/20 text-white text-lg focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/30 outline-none transition-all duration-300 hover:-translate-y-0.5"
               />
+            </div>
+
+            <div className="glass rounded-3xl p-6 md:p-8 hover:border-[#7c3aed]/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(124,58,237,0.2)]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#fbbf24] flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-[family-name:var(--font-display)] font-bold text-white">Showcase Title</h2>
+              </div>
+              <input
+                type="text"
+                name="showcaseTitle"
+                value={formData.showcaseTitle}
+                onChange={handleInputChange}
+                placeholder="My Creation Vault"
+                className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-[#7c3aed]/20 text-white text-lg focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/30 outline-none transition-all duration-300 hover:-translate-y-0.5"
+              />
+            </div>
+
+            <div className="glass rounded-3xl p-6 md:p-8 hover:border-[#fbbf24]/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(251,191,36,0.2)]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#fbbf24] to-[#00d4ff] flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-[family-name:var(--font-display)] font-bold text-white">Accent Color</h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  name="accentColor"
+                  value={formData.accentColor}
+                  onChange={handleInputChange}
+                  className="h-12 w-14 rounded-xl border border-white/20 bg-transparent"
+                />
+                <input
+                  type="text"
+                  name="accentColor"
+                  value={formData.accentColor}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#fbbf24]/20 text-white font-mono focus:border-[#fbbf24] focus:ring-2 focus:ring-[#fbbf24]/30 outline-none"
+                />
+              </div>
             </div>
 
             <div className="glass rounded-3xl p-6 md:p-8 hover:border-[#fbbf24]/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(251,191,36,0.2)]">
@@ -387,6 +536,58 @@ export default function ProfilePage() {
           </button>
         </div>
       </form>
+
+      <section className="max-w-6xl mx-auto mt-10">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-[family-name:var(--font-display)] font-bold text-white">Owned NFTs</h2>
+            <p className="text-sm text-gray-400">Everything this profile currently owns</p>
+          </div>
+          <div className="text-sm text-[#3b82f6] font-mono">{ownedNfts.length} items</div>
+        </div>
+
+        {nftsLoading ? (
+          <div className="glass rounded-2xl p-8 text-center text-gray-400">Loading owned NFTs...</div>
+        ) : ownedNfts.length === 0 ? (
+          <div className="glass rounded-2xl p-8 text-center text-gray-400">No owned NFTs yet.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {ownedNfts.map((nft) => (
+              <article
+                key={nft._id}
+                className="group rounded-2xl border border-white/10 bg-black/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-[#3b82f6]/40 hover:shadow-[0_0_25px_rgba(59,130,246,0.25)]"
+              >
+                <div className="mb-4 overflow-hidden rounded-xl border border-white/10 aspect-square">
+                  <img
+                    src={resolveMediaUrl(nft.imageURL)}
+                    alt={nft.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg"
+                    }}
+                  />
+                </div>
+
+                <h3 className="text-lg font-semibold text-white truncate">{nft.name}</h3>
+                <p className="mt-1 text-sm text-gray-400 line-clamp-2">{nft.description}</p>
+
+                <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
+                  <span>Token #{nft.tokenId}</span>
+                  <a
+                    href={`https://stellar.expert/explorer/testnet/tx/${nft.txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[#3b82f6] hover:text-[#60a5fa]"
+                  >
+                    Tx
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       {showSuccess && (
         <div className="fixed top-24 right-6 glass rounded-2xl p-6 max-w-md z-50 animate-in slide-in-from-right duration-500">

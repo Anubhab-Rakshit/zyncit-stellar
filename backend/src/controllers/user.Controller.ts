@@ -6,11 +6,11 @@ import { emitPlatformEvent } from "../services/eventBus";
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const address = (req as any).user.address; // ✅ updated line
-    const { name, email, avatar, bio } = req.body;
+    const { name, email, avatar, bio, banner, accentColor, showcaseTitle } = req.body;
 
     const user = await User.findOneAndUpdate(
       { address },
-      { name, email, avatar, bio },
+      { name, email, avatar, bio, banner, accentColor, showcaseTitle },
       { new: true, upsert: false }
     );
 
@@ -25,6 +25,9 @@ export const updateUserProfile = async (req: Request, res: Response) => {
         email: user.email ?? "",
         avatar: user.avatar ?? "",
         bio: user.bio ?? "",
+        banner: user.banner ?? "",
+        accentColor: user.accentColor ?? "#3b82f6",
+        showcaseTitle: user.showcaseTitle ?? "My Creation Vault",
       },
     });
 

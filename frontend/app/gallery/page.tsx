@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react"
 import { ExternalLink, Heart, Share2 } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface NFT {
   _id: string
@@ -200,9 +201,12 @@ export default function GalleryPage() {
                       {/* Image */}
                       <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 shadow-2xl">
                         <img
-                          src={nft.imageURL || "/placeholder.svg"}
+                          src={resolveMediaUrl(nft.imageURL)}
                           alt={nft.name}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg"
+                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
@@ -283,10 +287,13 @@ export default function GalleryPage() {
               {/* Image */}
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl">
                 <img
-                  src={selectedNFT.imageURL || "/placeholder.svg"}
+                  src={resolveMediaUrl(selectedNFT.imageURL)}
                   alt={selectedNFT.name}
                   className="w-full h-full object-cover"
                   style={{ animation: "subtle-rotate 20s linear infinite" }}
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg"
+                  }}
                 />
               </div>
 

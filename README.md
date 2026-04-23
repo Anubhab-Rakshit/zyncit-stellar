@@ -3,6 +3,52 @@
 ZYNC is a decentralized media content platform built on the Stellar testnet with Soroban smart contracts.
 Creators can upload media, register its fingerprint on-chain, mint NFTs, and manage content ownership with wallet-based auth.
 
+## Live Submission Links
+
+- Live demo: [https://zyncit-stellar.vercel.app/](https://zyncit-stellar.vercel.app/)
+- Demo video: [Google Drive Demo](https://drive.google.com/drive/folders/17dLtEjczj6FqkgJJSdYAzHzNRuH3Avii?usp=sharing)
+
+## Level 5 MVP Validation (Real Users)
+
+### User Wallet Addresses (5+)
+
+1. `GCG34N562IX57PLLVKVC6LYQEK7VNX3HBR5KIECNT22MR5P7MOHN7ECW`
+2. `GC53LJZ4V2CLF7NTWFKVSFWSPMKSVT7TABLDVZLT7A63HFHAY4DF4MKC`
+3. `GAJDI3UZB2JGUCDDHBUQKLXYI5336YSAUIP3SKIM5MZXXHIC3IS2NK46`
+4. `GBTHKSSIXQIHXYYTJJWCRYLLMV2GRJGKW4XWSUGVRLKKXJLWIJVLX4AC`
+5. `GBSG3YI6RMKZZEYD3LRODO5OCIE54NKC2KBR6MKU5XSDFXBHHUKEIGEW`
+
+### User Onboarding Artifacts
+
+- Google Form (name, email, wallet, rating, feedback): [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSeZZYXpnCqEGOSr-SwlU9c1rLPN9GrDHuuBLp80kRbT6HhTdA/viewform?usp=publish-editor)
+- Exported feedback sheet (Excel): [User Feedback Sheet](https://docs.google.com/spreadsheets/d/1Wlkg_i6xbI1-V893uAwyUwSFlKBpczFlUhwFRE8eaR0/edit?usp=sharing)
+- Feedback + iteration document: `docs/USER_FEEDBACK.md`
+
+### Architecture Documentation
+
+- Architecture doc: `docs/ARCHITECTURE.md`
+
+### Feedback Iteration Implemented
+
+Based on user feedback, completed upgrades include:
+
+- NFT image rendering fixes across gallery/marketplace/profile flows.
+- Profile personalization (banner/accent/showcase title) and owned-NFTs profile section.
+- Mint reliability and clearer failure handling in upload/mint pipeline.
+
+## Next Phase Improvement Plan
+
+1. Strengthen social profile layer (follow/creator pages + richer ownership timeline).
+2. Add robust analytics dashboard for creators (mint conversion, engagement, retention).
+3. Add contract-level ownership transfer sync and richer marketplace order lifecycle.
+4. Expand automated tests across upload/mint/profile/purchase flows.
+
+Improvement commit links:
+
+- [edd6af9](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/edd6af9)
+- [24255f8](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/24255f8)
+- [96cec83](https://github.com/Anubhab-Rakshit/zyncit-stellar/commit/96cec83)
+
 ## What Is Fully Integrated Now
 
 - One upload action now runs a complete backend pipeline:

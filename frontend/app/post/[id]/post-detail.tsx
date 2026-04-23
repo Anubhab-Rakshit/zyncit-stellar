@@ -7,6 +7,7 @@ import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
 import { mapWalletError } from "@/lib/errors"
 import { cacheGet, cacheSet } from "@/lib/cache"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface NFT {
   _id: string
@@ -220,7 +221,14 @@ export default function PostDetail({ postId }: { postId: string }) {
             <div className="relative">
               <div className="sticky top-32">
                 <div className="relative aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                  <img src={nft.imageURL || "/placeholder.svg"} alt={nft.name} className="w-full h-full object-cover" />
+                  <img
+                    src={resolveMediaUrl(nft.imageURL)}
+                    alt={nft.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg"
+                    }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
 

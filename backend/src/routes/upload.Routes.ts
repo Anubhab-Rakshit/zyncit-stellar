@@ -30,7 +30,9 @@ router.post("/avatar", walletProtect, upload.single("file"), async (req, res) =>
     });
   } catch (error) {
     console.error("❌ Avatar upload error:", error);
-    return res.status(500).json({ success: false, message: "Avatar upload failed", error });
+    const code = (error as any)?.code;
+    const message = error instanceof Error ? error.message : "Avatar upload failed";
+    return res.status(500).json({ success: false, code: code || "AVATAR_UPLOAD_FAILED", message });
   }
 });
 
@@ -66,13 +68,25 @@ router.post("/upload", walletProtect, upload.single("file"), async (req, res) =>
     const fileHash = `0x${keccak256(fileBuffer)}`;
     const registryResult = await uploadContentToBlockchain(imageCid, fileHash);
     if (!registryResult.success) {
-      return res.status(500).json({ message: "Blockchain content registration failed", error: registryResult.error });
+      const detail = registryResult.error instanceof Error ? registryResult.error.message : String(registryResult.error);
+      return res.status(500).json({
+        success: false,
+        code: "CONTENT_REGISTRY_FAILED",
+        message: "Blockchain content registration failed",
+        detail,
+      });
     }
 
     // Step 4️⃣: Mint NFT on-chain with metadata
     const mintResult = await mintNFT(userAddress, metadataURL);
     if (!mintResult.success || !mintResult.txHash || !mintResult.tokenId) {
-      return res.status(500).json({ message: "NFT mint failed", error: mintResult.error });
+      const detail = mintResult.error instanceof Error ? mintResult.error.message : String(mintResult.error);
+      return res.status(500).json({
+        success: false,
+        code: "MINT_FAILED",
+        message: "NFT mint failed",
+        detail,
+      });
     }
 
     // Step 5️⃣: Save synced state to MongoDB
@@ -105,7 +119,19 @@ router.post("/upload", walletProtect, upload.single("file"), async (req, res) =>
     });
   } catch (error) {
     console.error("❌ Upload or Mint Error:", error);
-    res.status(500).json({ message: "Upload or Mint failed", error });
+    const code = (error as any)?.code;
+    const message = error instanceof Error ? error.message : "Upload or Mint failed";
+
+    if (code === "PINATA_API_KEY_REVOKED") {
+      return res.status(500).json({
+        success: false,
+        code,
+        message,
+        action: "Set a valid active PINATA_JWT in backend environment and restart server",
+      });
+    }
+
+    return res.status(500).json({ success: false, code: code || "UPLOAD_OR_MINT_FAILED", message });
   } finally {
     if (filePath && fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Share2, ExternalLink, Check, Calendar, LinkIcon } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface User {
   _id: string
@@ -13,6 +14,9 @@ interface User {
   email?: string
   avatar?: string
   bio?: string
+  banner?: string
+  accentColor?: string
+  showcaseTitle?: string
   createdAt: string
 }
 
@@ -141,7 +145,16 @@ export default function ProfileDetail({ address }: { address: string }) {
       <main className="relative min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
-          <div className="glass rounded-3xl p-8 mb-12">
+          <div className="glass rounded-3xl p-0 mb-12 overflow-hidden">
+            <div
+              className="h-40 w-full"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${user.accentColor || "#3b82f6"}66, #0a0a0f), url('${resolveMediaUrl(user.banner)}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <div className="p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
               {/* Avatar */}
               <div className="relative">
@@ -162,6 +175,9 @@ export default function ProfileDetail({ address }: { address: string }) {
               {/* User Info */}
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">{user.name || "Anonymous Creator"}</h1>
+                <p className="text-sm uppercase tracking-[0.2em] mb-2" style={{ color: user.accentColor || "#3b82f6" }}>
+                  {user.showcaseTitle || "My Creation Vault"}
+                </p>
                 <p className="text-gray-500 font-mono text-sm mb-4">{`${address.slice(0, 6)}...${address.slice(-4)}`}</p>
                 {user.bio && <p className="text-gray-400 mb-6 leading-relaxed">{user.bio}</p>}
 
@@ -197,11 +213,12 @@ export default function ProfileDetail({ address }: { address: string }) {
                 </div>
               </div>
             </div>
+            </div>
           </div>
 
           {/* NFT Grid */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Creations</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">{user.showcaseTitle || "Creations"}</h2>
           </div>
 
           {nfts.length === 0 ? (
@@ -221,9 +238,12 @@ export default function ProfileDetail({ address }: { address: string }) {
                   <div className="relative rounded-3xl border border-white/10 bg-black/40 p-4 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.45)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)] transition-all duration-300">
                     <div className="relative aspect-square rounded-2xl overflow-hidden mb-4">
                       <img
-                        src={nft.imageURL || "/placeholder.svg"}
+                        src={resolveMediaUrl(nft.imageURL)}
                         alt={nft.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg"
+                        }}
                       />
                     </div>
 

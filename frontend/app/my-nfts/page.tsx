@@ -7,6 +7,7 @@ import { ExternalLink, Trash2, Upload, Share2 } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import ParallaxOrbBackground from "@/components/parallax-orb-background"
 import { cacheGet, cacheSet } from "@/lib/cache"
+import { resolveMediaUrl } from "@/lib/media"
 
 interface NFT {
   _id: string
@@ -140,9 +141,12 @@ export default function MyNFTsPage() {
                   <div className="relative rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.45)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)] transition-all duration-300">
                     <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 shadow-2xl">
                       <img
-                        src={nft.imageURL || "/placeholder.svg"}
+                        src={resolveMediaUrl(nft.imageURL)}
                         alt={nft.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg"
+                        }}
                       />
                     </div>
 

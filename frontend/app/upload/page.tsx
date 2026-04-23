@@ -7,6 +7,7 @@ import { Upload, Check, FileText, X } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
+import { resolveMediaUrl } from "@/lib/media"
 
 export default function UploadMintPage() {
   const { isAuthenticated } = useAuth()
@@ -80,7 +81,7 @@ export default function UploadMintPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Upload failed")
+        throw new Error(data.message || data.error || data.action || "Upload failed")
       }
 
       setUploadedNFT(data.nft)
@@ -428,9 +429,12 @@ export default function UploadMintPage() {
                     {uploadedNFT.imageURL && (
                       <div className="pt-4 border-t border-white/10">
                         <img
-                          src={uploadedNFT.imageURL || "/placeholder.svg"}
+                          src={resolveMediaUrl(uploadedNFT.imageURL)}
                           alt={uploadedNFT.name}
                           className="w-full h-48 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder.svg"
+                          }}
                         />
                       </div>
                     )}

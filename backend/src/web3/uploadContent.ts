@@ -1,4 +1,14 @@
-import { TransactionBuilder, BASE_FEE, nativeToScVal } from "@stellar/stellar-sdk";
+import {
+  BASE_FEE,
+  TransactionBuilder,
+  xdr,
+  scValToNative,
+  Contract,
+  rpc,
+  Keypair,
+  Networks,
+  nativeToScVal,
+} from "@stellar/stellar-sdk";
 import { emitPlatformEvent } from "../services/eventBus";
 import { waitForTransactionFinality } from "../services/txTracker";
 import { getContractIntegration } from "./contractIntegration";
@@ -10,27 +20,63 @@ export const uploadContentToBlockchain = async (
   paymentToken: string = ""
 ) => {
   try {
-    const { rpcServer, signer, sourceAccount, networkPassphrase, contracts } = await getContractIntegration();
+    const { rpcServer, signer, sourceAccount, networkPassphrase, contractIds } = await getContractIntegration();
 
-    const tx = new TransactionBuilder(sourceAccount, {
-      fee: BASE_FEE,
-      networkPassphrase,
-    })
-      .addOperation(
-        contracts.contentRegistry.call("register_content",
-          nativeToScVal(signer.publicKey(), { type: "address" }),
-          nativeToScVal(fileHash, { type: "string" }),
-          nativeToScVal(cid, { type: "string" })
+    let sendRes: { hash: string };
+    let statusRpc = rpcServer;
+
+    try {
+      const tx = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase,
+      })
+        .addOperation(
+          new Contract(contractIds.contentRegistry).call(
+            "register_content",
+            xdr.ScVal.scvAddress(xdr.ScAddress.scAddressTypeAccount(signer.xdrPublicKey())),
+            xdr.ScVal.scvString(fileHash),
+            xdr.ScVal.scvString(cid)
+          )
         )
-      )
-      .setTimeout(30)
-      .build();
+        .setTimeout(30)
+        .build();
 
-    const preppedTx = await rpcServer.prepareTransaction(tx);
-    preppedTx.sign(signer);
-    const sendRes = await rpcServer.sendTransaction(preppedTx);
+      const preppedTx = await rpcServer.prepareTransaction(tx);
+      preppedTx.sign(signer);
+      sendRes = await rpcServer.sendTransaction(preppedTx);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (!message.includes("Bad union switch")) {
+        throw err;
+      }
 
-    const finality = await waitForTransactionFinality(rpcServer, sendRes.hash, {
+      // Fallback path for edge RPC/XDR incompatibilities.
+      const fallbackRpc = new rpc.Server(process.env.RPC_URL ?? "https://soroban-testnet.stellar.org:443");
+      const fallbackSigner = Keypair.fromSecret(process.env.PRIVATE_KEY!);
+      const fallbackAccount = await fallbackRpc.getAccount(fallbackSigner.publicKey());
+
+      const fallbackTx = new TransactionBuilder(fallbackAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: process.env.STELLAR_NETWORK_PASSPHRASE || Networks.TESTNET,
+      })
+        .addOperation(
+          new Contract(contractIds.contentRegistry).call(
+            "register_content",
+            nativeToScVal(fallbackSigner.publicKey(), { type: "address" }),
+            nativeToScVal(fileHash, { type: "string" }),
+            nativeToScVal(cid, { type: "string" })
+          )
+        )
+        .setTimeout(30)
+        .build();
+
+      const preparedFallback = await fallbackRpc.prepareTransaction(fallbackTx);
+      preparedFallback.sign(fallbackSigner);
+      sendRes = await fallbackRpc.sendTransaction(preparedFallback);
+      statusRpc = fallbackRpc;
+    }
+
+    const finality = await waitForTransactionFinality(statusRpc, sendRes.hash, {
       action: "register_content",
       cid,
       fileHash,
@@ -46,10 +92,26 @@ export const uploadContentToBlockchain = async (
       cid,
     });
 
+    const resultMetaXdr = (finality as { resultMetaXdr?: string }).resultMetaXdr;
+    let contentId = fileHash;
+
+    try {
+      if (resultMetaXdr) {
+        const meta = xdr.TransactionMeta.fromXDR(resultMetaXdr, "base64");
+        const returnVal = meta?.v3()?.sorobanMeta()?.returnValue();
+        if (returnVal) {
+          const native = scValToNative(returnVal);
+          contentId = String(native);
+        }
+      }
+    } catch (_parseErr) {
+      // If decoding fails, keep fallback contentId.
+    }
+
     return {
       success: true,
       txHash: sendRes.hash,
-      contentId: fileHash,
+      contentId,
     };
   } catch (error) {
     console.error("❌ UploadContent error:", error);

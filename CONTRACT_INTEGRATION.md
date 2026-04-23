@@ -5,7 +5,9 @@ This project integrates Soroban smart contracts through a dedicated backend inte
 ## Integration Entry Point
 
 - Primary file (judge-facing): `backend/src/contract-integration.ts`
-  - Exposes unified integration methods used by backend flows.
+  - Exposes unified methods for contract actions (`registerContent`, `mintContentNft`, `buyNftWithRoyalty`).
+  - Exposes integration verification helpers (`getConfiguredContractAddresses`, `verifyContractIntegration`).
+  - Validates required env configuration for contract calls.
 - Internal wiring file: `backend/src/web3/contractIntegration.ts`
   - Centralized contract + signer + RPC initialization.
 

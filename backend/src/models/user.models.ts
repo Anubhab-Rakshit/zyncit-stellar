@@ -6,6 +6,9 @@ export interface IUser extends Document {
   email?: string;
   avatar?: string;
   bio?: string;
+  banner?: string;
+  accentColor?: string;
+  showcaseTitle?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,6 +40,20 @@ const userSchema: Schema<IUser> = new Schema(
       type: String,
       maxlength: 200,
       trim: true,
+    },
+    banner: {
+      type: String,
+      trim: true,
+    },
+    accentColor: {
+      type: String,
+      trim: true,
+      default: "#3b82f6",
+    },
+    showcaseTitle: {
+      type: String,
+      trim: true,
+      default: "My Creation Vault",
     },
   },
   {
