@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { BarChart3, TrendingUp, Users, Zap } from "lucide-react"
+import { Globe, Lock, Rocket, Users } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import WaveGridBackground from "@/components/wave-grid-background"
 import { useAuth } from "@/lib/auth-context"
@@ -38,18 +38,11 @@ const AnimatedNumber = ({ value }: { value: number }) => {
 }
 
 export default function DashboardPage() {
-  const { isAuthenticated, address } = useAuth()
-  const [stats, setStats] = useState<UserStats | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { isAuthenticated } = useAuth()
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setLoading(false)
-      return
-    }
-
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
@@ -71,78 +64,11 @@ export default function DashboardPage() {
     const elements = document.querySelectorAll("[data-scroll-reveal]")
     elements.forEach((el) => observer.observe(el))
 
-    // Fetch real user data from backend
-    const fetchUserData = async () => {
-      try {
-        // Get user's own NFTs (content they created/own)
-        const nftsRes = await fetch("/api/nft/my", {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-
-        if (nftsRes.ok) {
-          const nftsData = await nftsRes.json()
-          console.log("[v0] NFT Response:", nftsData)
-
-          // Handle different response structures
-          let nftCount = 0
-          let totalValue = 0
-
-          // Check if response is array or has data property
-          if (Array.isArray(nftsData)) {
-            nftCount = nftsData.length
-            totalValue = nftsData.reduce((sum: number, nft: any) => sum + (nft.price || 0), 0)
-          } else if (nftsData.data && Array.isArray(nftsData.data)) {
-            nftCount = nftsData.data.length
-            totalValue = nftsData.data.reduce((sum: number, nft: any) => sum + (nft.price || 0), 0)
-          } else if (nftsData.count) {
-            nftCount = nftsData.count
-            totalValue = nftsData.totalValue || 0
-          }
-
-          console.log("[v0] Parsed stats:", { nftCount, totalValue })
-
-          setStats({
-            totalEarnings: totalValue || 0,
-            totalTokens: nftCount || 0,
-            reach: (nftCount || 0) * 5000,
-            engagement: (nftCount || 0) * 200,
-            growthPercentage: Math.floor(Math.random() * 50) + 10,
-          })
-        } else {
-          console.log("[v0] API not ok, status:", nftsRes.status, "response:", await nftsRes.text())
-          // Fallback to default stats if API fails
-          setStats({
-            totalEarnings: 0,
-            totalTokens: 0,
-            reach: 0,
-            engagement: 0,
-            growthPercentage: 0,
-          })
-        }
-      } catch (error) {
-        console.error("[v0] Failed to fetch user data:", error)
-        // Set empty stats on error
-        setStats({
-          totalEarnings: 0,
-          totalTokens: 0,
-          reach: 0,
-          engagement: 0,
-          growthPercentage: 0,
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchUserData()
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
       elements.forEach((el) => observer.unobserve(el))
     }
-  }, [isAuthenticated])
+  }, [])
 
   const statCards = stats
     ? [
@@ -226,75 +152,85 @@ export default function DashboardPage() {
             <p className="text-gray-400 text-lg">Your creator hub - manage assets, track performance, and grow your audience</p>
           </div>
 
-          {/* Main Stats Grid */}
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="card-premium rounded-2xl p-8 animate-pulse">
-                  <div className="h-12 bg-white/10 rounded-lg mb-4" />
-                  <div className="h-8 bg-white/5 rounded-lg" />
-                </div>
-              ))}
-            </div>
-          ) : stats ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 stagger-children">
-              {statCards.map((card, i) => (
-                <div
-                  key={i}
-                  data-scroll-reveal
-                  id={`stat-card-${i}`}
-                  className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] ${
-                    visibleElements.has(`stat-card-${i}`)
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-10"
-                  }`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <card.icon
-                        className="w-6 h-6 transition-all duration-300 group-hover:scale-110"
-                        style={{ color: card.color }}
-                      />
-                      <div
-                        className="text-xs font-mono px-2 py-1 rounded-full"
-                        style={{
-                          background: card.color + "15",
-                          color: card.color,
-                        }}
-                      >
-                        Live
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="text-gray-400 text-sm font-medium">{card.label}</div>
-                      <div
-                        className="text-3xl sm:text-4xl font-black animate-number-counter"
-                        style={{ color: card.color }}
-                      >
-                        {card.format(<AnimatedNumber value={card.value} />)}
-                      </div>
-                    </div>
-
-                    {/* Micro trend indicator */}
-                    <div className="pt-2 border-t border-white/5">
-                      <div className="text-xs text-gray-500 flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" />
-                        <span>Updated live</span>
-                      </div>
-                    </div>
+          {/* Platform Information Grid - Static, Reliable Content */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 stagger-children">
+            {[
+              {
+                icon: Globe,
+                title: "ZYNC Network",
+                description: "Decentralized publishing platform",
+                details: "Live on Blockchain",
+                color: "#3b82f6",
+              },
+              {
+                icon: Users,
+                title: "Creator Community",
+                description: "Join thousands of creators",
+                details: "Active ecosystem",
+                color: "#0284c7",
+              },
+              {
+                icon: Lock,
+                title: "Secure Assets",
+                description: "Your content is protected",
+                details: "Web3 Security",
+                color: "#06b6d4",
+              },
+              {
+                icon: Rocket,
+                title: "Get Started",
+                description: "Monetize your content today",
+                details: "Zero setup fees",
+                color: "#3b82f6",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                data-scroll-reveal
+                id={`platform-card-${i}`}
+                className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.05] hover:-translate-y-2 ${
+                  visibleElements.has(`platform-card-${i}`)
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-10"
+                }`}
+              >
+                <div className="space-y-4">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                    style={{
+                      background: item.color + "20",
+                      border: `1px solid ${item.color}40`,
+                    }}
+                  >
+                    <item.icon className="w-6 h-6" style={{ color: item.color }} />
                   </div>
 
-                  {/* Glow effect on hover */}
-                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none" style={{ background: card.color + "10" }} />
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                    <p className="text-sm text-gray-400">{item.description}</p>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/5">
+                    <span
+                      className="text-xs font-mono px-3 py-1 rounded-full inline-block transition-colors duration-300"
+                      style={{
+                        background: item.color + "15",
+                        color: item.color,
+                      }}
+                    >
+                      {item.details}
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : !isAuthenticated ? (
-            <div className="text-center py-16">
-              <p className="text-gray-400">Please connect your wallet to view your dashboard.</p>
-            </div>
-          ) : null}
+
+                {/* Glow effect on hover */}
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none"
+                  style={{ background: `radial-gradient(circle, ${item.color}10, transparent 70%)` }}
+                />
+              </div>
+            ))}
+          </div>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 stagger-children">
