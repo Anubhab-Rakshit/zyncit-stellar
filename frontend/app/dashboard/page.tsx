@@ -6,37 +6,6 @@ import FuturisticNavbar from "@/components/futuristic-navbar"
 import WaveGridBackground from "@/components/wave-grid-background"
 import { useAuth } from "@/lib/auth-context"
 
-interface UserStats {
-  totalEarnings: number
-  totalTokens: number
-  reach: number
-  engagement: number
-  growthPercentage: number
-}
-
-const AnimatedNumber = ({ value }: { value: number }) => {
-  const [displayValue, setDisplayValue] = useState(0)
-
-  useEffect(() => {
-    let start = 0
-    const target = value
-    const duration = 1500
-    const startTime = Date.now()
-
-    const timer = setInterval(() => {
-      const elapsed = Date.now() - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      setDisplayValue(Math.floor(start + (target - start) * progress))
-
-      if (progress === 1) clearInterval(timer)
-    }, 16)
-
-    return () => clearInterval(timer)
-  }, [value])
-
-  return displayValue.toLocaleString()
-}
-
 export default function DashboardPage() {
   const { isAuthenticated } = useAuth()
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -69,51 +38,6 @@ export default function DashboardPage() {
       elements.forEach((el) => observer.unobserve(el))
     }
   }, [])
-
-  const statCards = stats
-    ? [
-        {
-          icon: BarChart3,
-          label: "Total Earnings",
-          value: stats.totalEarnings,
-          format: (v) => {
-            const num = Number(v) || 0
-            return `$${(num / 1000).toFixed(1)}K`
-          },
-          color: "#3b82f6",
-        },
-        {
-          icon: Zap,
-          label: "Tokens Created",
-          value: stats.totalTokens,
-          format: (v) => {
-            const num = Number(v) || 0
-            return num === 0 ? "0" : `${(num / 1000).toFixed(1)}K`
-          },
-          color: "#0284c7",
-        },
-        {
-          icon: Users,
-          label: "Total Reach",
-          value: stats.reach,
-          format: (v) => {
-            const num = Number(v) || 0
-            return num === 0 ? "0" : `${(num / 1000000).toFixed(1)}M`
-          },
-          color: "#06b6d4",
-        },
-        {
-          icon: TrendingUp,
-          label: "Growth",
-          value: stats.growthPercentage,
-          format: (v) => {
-            const num = Number(v) || 0
-            return `+${Math.floor(num)}%`
-          },
-          color: "#3b82f6",
-        },
-      ]
-    : []
 
   return (
     <>
