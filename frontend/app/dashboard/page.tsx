@@ -1,21 +1,129 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Wallet, Upload, TrendingUp, Eye, Zap, MessageSquare, Settings, ImageIcon } from "lucide-react"
+import { BarChart3, TrendingUp, Users, Zap } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
 import WaveGridBackground from "@/components/wave-grid-background"
+import { useAuth } from "@/lib/auth-context"
 
-export default function DashboardPage() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+interface UserStats {
+  totalEarnings: number
+  totalTokens: number
+  reach: number
+  engagement: number
+  growthPercentage: number
+}
+
+const AnimatedNumber = ({ value }: { value: number }) => {
+  const [displayValue, setDisplayValue] = useState(0)
 
   useEffect(() => {
+    let start = 0
+    const target = value
+    const duration = 1500
+    const startTime = Date.now()
+
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      setDisplayValue(Math.floor(start + (target - start) * progress))
+
+      if (progress === 1) clearInterval(timer)
+    }, 16)
+
+    return () => clearInterval(timer)
+  }, [value])
+
+  return displayValue.toLocaleString()
+}
+
+export default function DashboardPage() {
+  const { isAuthenticated, address } = useAuth()
+  const [stats, setStats] = useState<UserStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
 
     window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+
+    // Setup scroll reveal observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleElements((prev) => new Set([...prev, entry.target.id]))
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    const elements = document.querySelectorAll("[data-scroll-reveal]")
+    elements.forEach((el) => observer.observe(el))
+
+    // Fetch real user stats
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`/api/user/stats/${address}`)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success) {
+            setStats(data.stats)
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch stats:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove)
+      elements.forEach((el) => observer.unobserve(el))
+    }
+  }, [isAuthenticated, address])
+
+  const statCards = stats
+    ? [
+        {
+          icon: BarChart3,
+          label: "Total Earnings",
+          value: stats.totalEarnings,
+          format: (v) => `$${(v / 1000).toFixed(1)}K`,
+          color: "#3b82f6",
+        },
+        {
+          icon: Zap,
+          label: "Tokens Created",
+          value: stats.totalTokens,
+          format: (v) => `${(v / 1000).toFixed(1)}K`,
+          color: "#0284c7",
+        },
+        {
+          icon: Users,
+          label: "Total Reach",
+          value: stats.reach,
+          format: (v) => `${(v / 1000000).toFixed(1)}M`,
+          color: "#06b6d4",
+        },
+        {
+          icon: TrendingUp,
+          label: "Growth",
+          value: stats.growthPercentage,
+          format: (v) => `+${v}%`,
+          color: "#3b82f6",
+        },
+      ]
+    : []
 
   return (
     <>
@@ -37,137 +145,142 @@ export default function DashboardPage() {
 
       <main className="relative min-h-screen pt-24 sm:pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-[100vw] overflow-x-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="relative mb-16">
-            {/* Header with animated gradient text */}
+          {/* Header Section */}
+          <div className="mb-16 space-y-4">
             <h1
-              className="font-[family-name:var(--font-display)] text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-wider mb-16 text-center"
+              className="font-[family-name:var(--font-display)] text-5xl sm:text-6xl md:text-7xl font-black tracking-wider"
               style={{
-                letterSpacing: "0.15em",
-                background: "linear-gradient(135deg, #3b82f6 0%, #dc2626 100%)",
+                letterSpacing: "0.1em",
+                background: "linear-gradient(135deg, #3b82f6 0%, #0284c7 50%, #06b6d4 100%)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                textShadow: "0 0 80px rgba(59, 130, 246, 0.3)",
               }}
             >
               COMMAND CENTER
             </h1>
+            <p className="text-gray-400 text-lg">Manage your digital assets and monitor performance</p>
+          </div>
 
-            <div className="relative">
-              {/* Top left quadrant - Main metrics */}
-              <div
-                className="card-premium rounded-3xl p-8 mb-8"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="text-center p-6">
-                    <div className="text-6xl md:text-7xl font-black mb-2 bg-gradient-to-r from-[#3b82f6] to-[#0284c7] bg-clip-text text-transparent">
-                      $45K
-                    </div>
-                    <div className="text-sm text-gray-400 uppercase tracking-widest">Total Earnings</div>
-                    <div className="mt-3 text-[#3b82f6] text-sm font-mono">+12.5% this month</div>
-                  </div>
-
-                  <div className="text-center p-6">
-                    <div className="text-6xl md:text-7xl font-black mb-2 bg-gradient-to-r from-[#dc2626] to-[#3b82f6] bg-clip-text text-transparent">
-                      127K
-                    </div>
-                    <div className="text-sm text-gray-400 uppercase tracking-widest">Total Tokens</div>
-                    <div className="mt-3 text-[#dc2626] text-sm font-mono">+8 new today</div>
-                  </div>
+          {/* Main Stats Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="card-premium rounded-2xl p-8 animate-pulse">
+                  <div className="h-12 bg-white/10 rounded-lg mb-4" />
+                  <div className="h-8 bg-white/5 rounded-lg" />
                 </div>
-              </div>
-
-              {/* Bottom right - Secondary metrics in staggered layout */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-                {[
-                  { icon: Eye, value: "2.1M", label: "Reach", color: "#3b82f6" },
-                  { icon: Zap, value: "8.4K", label: "Engagement", color: "#dc2626" },
-                  { icon: TrendingUp, value: "+24%", label: "Growth", color: "#0284c7" },
-                ].map((metric, i) => (
-                  <div
-                    key={i}
-                    className="card-premium rounded-2xl p-6 group"
-                  >
-                    <metric.icon className="w-8 h-8 mb-4" style={{ color: metric.color }} />
-                    <div className="text-3xl font-black mb-1" style={{ color: metric.color }}>
-                      {metric.value}
+              ))}
+            </div>
+          ) : stats ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 stagger-children">
+              {statCards.map((card, i) => (
+                <div
+                  key={i}
+                  data-scroll-reveal
+                  id={`stat-card-${i}`}
+                  className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] ${
+                    visibleElements.has(`stat-card-${i}`)
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-10"
+                  }`}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <card.icon
+                        className="w-6 h-6 transition-all duration-300 group-hover:scale-110"
+                        style={{ color: card.color }}
+                      />
+                      <div
+                        className="text-xs font-mono px-2 py-1 rounded-full"
+                        style={{
+                          background: card.color + "15",
+                          color: card.color,
+                        }}
+                      >
+                        Live
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500 uppercase tracking-wider">{metric.label}</div>
-                  </div>
-                ))}
-              </div>
 
-              <div className="mt-12 relative h-64 md:h-80">
-                {[
-                  { icon: Upload, label: "Upload", color: "#3b82f6", x: "10%", y: "20%", delay: "0s", href: "/upload" },
-                  {
-                    icon: ImageIcon,
-                    label: "My NFTs",
-                    color: "#dc2626",
-                    x: "50%",
-                    y: "40%",
-                    delay: "0.2s",
-                    href: "/my-nfts",
-                  },
-                  {
-                    icon: Wallet,
-                    label: "Withdraw",
-                    color: "#0284c7",
-                    x: "80%",
-                    y: "10%",
-                    delay: "0.4s",
-                    href: "/wallet",
-                  },
-                  {
-                    icon: MessageSquare,
-                    label: "Messages",
-                    color: "#3b82f6",
-                    x: "25%",
-                    y: "70%",
-                    delay: "0.6s",
-                    href: "#",
-                  },
-                  {
-                    icon: Settings,
-                    label: "Settings",
-                    color: "#dc2626",
-                    x: "70%",
-                    y: "65%",
-                    delay: "0.8s",
-                    href: "/profile",
-                  },
-                ].map((action, i) => (
-                  <a
-                    key={i}
-                    href={action.href}
-                    className="absolute group"
+                    <div className="space-y-1">
+                      <div className="text-gray-400 text-sm font-medium">{card.label}</div>
+                      <div
+                        className="text-3xl sm:text-4xl font-black animate-number-counter"
+                        style={{ color: card.color }}
+                      >
+                        {card.format(<AnimatedNumber value={card.value} />)}
+                      </div>
+                    </div>
+
+                    {/* Micro trend indicator */}
+                    <div className="pt-2 border-t border-white/5">
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        <span>Updated live</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Glow effect on hover */}
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none" style={{ background: card.color + "10" }} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-gray-400">No data available. Connect your wallet to see your stats.</p>
+            </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 stagger-children">
+            {[
+              { title: "Upload Content", description: "Publish and tokenize new digital assets", href: "/upload", color: "#3b82f6" },
+              { title: "View Analytics", description: "Track performance metrics and reach", href: "/analytics", color: "#0284c7" },
+              { title: "Manage Assets", description: "View and manage your NFT portfolio", href: "/my-nfts", color: "#06b6d4" },
+            ].map((action, i) => (
+              <a
+                key={i}
+                href={action.href}
+                data-scroll-reveal
+                id={`action-${i}`}
+                className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] cursor-pointer ${
+                  visibleElements.has(`action-${i}`)
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-10"
+                }`}
+              >
+                <div className="space-y-3">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                     style={{
-                      left: action.x,
-                      top: action.y,
-                      animation: "float 6s ease-in-out infinite",
-                      animationDelay: action.delay,
+                      background: action.color + "15",
+                      border: `1px solid ${action.color}30`,
                     }}
                   >
                     <div
-                      className="card-premium rounded-2xl p-6 flex flex-col items-center gap-3"
-                    >
-                      <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center"
-                        style={{
-                          background: action.color + "20",
-                          border: "2px solid " + action.color + "60",
-                        }}
-                      >
-                        <action.icon className="w-8 h-8" style={{ color: action.color }} />
-                      </div>
-                      <span className="text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                        {action.label}
-                      </span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
+                      className="w-6 h-6 rounded-full animate-pulse-glow"
+                      style={{ background: action.color }}
+                    />
+                  </div>
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#06b6d4] transition-colors">{action.title}</h3>
+                  <p className="text-sm text-gray-400">{action.description}</p>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2 text-sm font-mono text-gray-500 group-hover:text-[#3b82f6] transition-colors">
+                  <span>Access</span>
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* Info Section */}
+          <div className="card-premium rounded-2xl p-8 md:p-12 border border-white/5">
+            <h2 className="text-2xl font-bold text-white mb-4">About Your Dashboard</h2>
+            <p className="text-gray-400 leading-relaxed">
+              Your Command Center provides real-time insights into your creative earnings, token distribution, audience reach, and growth metrics. All data updates live as your content gains traction on the ZYNC network. Track your success and optimize your strategy with detailed performance analytics.
+            </p>
           </div>
         </div>
       </main>

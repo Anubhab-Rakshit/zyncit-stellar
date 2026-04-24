@@ -116,9 +116,9 @@ export default function HomePage() {
               style={{ animationDelay: "0.2s" }}
             >
               <img
-                src="/zync-logo.png"
+                src="/logo.png"
                 alt="ZYNC"
-                className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]"
+                className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 drop-shadow-[0_0_40px_rgba(59,130,246,0.6)] animate-pulse-glow"
               />
             </div>
 
@@ -171,7 +171,7 @@ export default function HomePage() {
 
             {/* Key Statistics */}
             <div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-24 px-4 max-w-4xl mx-auto animate-fadeInScale"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-24 px-4 max-w-4xl mx-auto animate-fadeInScale stagger-children"
               style={{ animationDelay: "0.8s" }}
             >
               {[
@@ -183,7 +183,7 @@ export default function HomePage() {
                   key={i}
                   data-scroll-reveal
                   id={`stat-${i}`}
-                  className={`glass rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:scale-[1.05] hover:-translate-y-2 ${
+                  className={`glass rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:scale-[1.08] hover:-translate-y-3 cursor-pointer group ${
                     visibleElements.has(`stat-${i}`)
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-10"
@@ -194,21 +194,29 @@ export default function HomePage() {
                 >
                   <div className="space-y-3">
                     <stat.icon
-                      className="w-10 h-10 mx-auto transition-all duration-300 hover:scale-110"
+                      className="w-10 h-10 mx-auto transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"
                       style={{ color: stat.color }}
                     />
                     <div
-                      className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-black"
+                      className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-black animate-number-counter"
                       style={{ color: stat.color }}
                     >
                       {stat.value}
                     </div>
                     <div
-                      className="font-[family-name:var(--font-display)] text-xs sm:text-sm tracking-widest text-gray-400"
+                      className="font-[family-name:var(--font-display)] text-xs sm:text-sm tracking-widest text-gray-400 group-hover:text-gray-300 transition-colors"
                     >
                       {stat.label}
                     </div>
                   </div>
+
+                  {/* Glow background on hover */}
+                  <div
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle, ${stat.color}20, transparent 70%)`,
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -244,7 +252,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 stagger-children">
               {[
                 {
                   icon: Lock,
@@ -272,14 +280,11 @@ export default function HomePage() {
                   key={i}
                   data-scroll-reveal
                   id={`feature-${i}`}
-                  className={`group card-premium rounded-2xl p-8 transition-all duration-500 ${
+                  className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.05] hover:-translate-y-2 ${
                     visibleElements.has(`feature-${i}`)
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-10"
                   }`}
-                  style={{
-                    transitionDelay: `${parseFloat(feature.delay) * 100}ms`,
-                  }}
                 >
                   <div className="space-y-4">
                     <feature.icon
@@ -297,7 +302,7 @@ export default function HomePage() {
 
         {/* Featured Content Section */}
         {featuredNFTs.length > 0 && (
-          <section className="relative py-20 md:py-32 px-4 sm:px-6 lg:px-8">
+          <section className="relative py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-[#0284c7]/5 to-transparent">
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0284c7] to-transparent opacity-50" />
 
             <div className="max-w-7xl mx-auto">
@@ -320,9 +325,10 @@ export default function HomePage() {
                 >
                   FEATURED CONTENT
                 </h2>
+                <p className="text-gray-400 mt-4">Discover the latest creations from our community</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
                 {featuredNFTs.map((nft, i) => (
                   <a
                     key={nft._id}
@@ -334,20 +340,17 @@ export default function HomePage() {
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-10"
                     }`}
-                    style={{
-                      transitionDelay: `${i * 100}ms`,
-                    }}
                   >
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={resolveMediaUrl(nft.imageURL)}
                         alt={nft.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg"
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
                     </div>
 
                     <div className="p-4 space-y-3">
