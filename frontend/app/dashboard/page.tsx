@@ -56,11 +56,7 @@ export default function DashboardPage() {
             <div className="relative">
               {/* Top left quadrant - Main metrics */}
               <div
-                className="glass rounded-3xl p-8 mb-8 transform -rotate-1 hover:rotate-0 transition-transform duration-700"
-                style={{
-                  boxShadow: "0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(59, 130, 246, 0.2)",
-                  backdropFilter: "blur(40px)",
-                }}
+                className="card-premium rounded-3xl p-8 mb-8"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="text-center p-6">
@@ -90,11 +86,7 @@ export default function DashboardPage() {
                 ].map((metric, i) => (
                   <div
                     key={i}
-                    className="glass rounded-2xl p-6 group hover:scale-105 transition-all duration-500"
-                    style={{
-                      transform: `rotate(${i % 2 === 0 ? 1 : -1}deg)`,
-                      boxShadow: `0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px ${metric.color}20`,
-                    }}
+                    className="card-premium rounded-2xl p-6 group"
                   >
                     <metric.icon className="w-8 h-8 mb-4" style={{ color: metric.color }} />
                     <div className="text-3xl font-black mb-1" style={{ color: metric.color }}>
@@ -152,22 +144,18 @@ export default function DashboardPage() {
                     style={{
                       left: action.x,
                       top: action.y,
-                      animation: `float 6s ease-in-out infinite`,
+                      animation: "float 6s ease-in-out infinite",
                       animationDelay: action.delay,
                     }}
                   >
                     <div
-                      className="glass rounded-2xl p-6 flex flex-col items-center gap-3 transition-all duration-500 hover:scale-125 hover:-translate-y-4"
-                      style={{
-                        boxShadow: `0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px ${action.color}30`,
-                      }}
+                      className="card-premium rounded-2xl p-6 flex flex-col items-center gap-3"
                     >
                       <div
                         className="w-16 h-16 rounded-full flex items-center justify-center"
                         style={{
-                          background: `${action.color}20`,
-                          border: `2px solid ${action.color}60`,
-                          boxShadow: `0 0 30px ${action.color}40`,
+                          background: action.color + "20",
+                          border: "2px solid " + action.color + "60",
                         }}
                       >
                         <action.icon className="w-8 h-8" style={{ color: action.color }} />

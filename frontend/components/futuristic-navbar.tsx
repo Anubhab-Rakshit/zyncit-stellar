@@ -4,7 +4,6 @@ import {
   Home,
   Search,
   LogIn,
-  UserPlus,
   Menu,
   X,
   LayoutDashboard,
@@ -15,14 +14,23 @@ import {
   UserCircle,
   ImageIcon,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 
 export default function FuturisticNavbar() {
   const [hoveredIcon, setHoveredIcon] = useState<number | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const { isAuthenticated, address, logout } = useAuth()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const iconButtons = [
     { icon: Home, label: "Home", href: "/" },
@@ -37,7 +45,7 @@ export default function FuturisticNavbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 md:py-6">
+      <nav className={"fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-3 md:py-4 transition-all duration-500 " + (isScrolled ? "bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5" : "bg-transparent")}>
         <div className="max-w-7xl mx-auto">
           {/* Desktop Navbar */}
           <div className="hidden md:flex items-center justify-between">
@@ -64,7 +72,7 @@ export default function FuturisticNavbar() {
                   </div>
 
                   {hoveredIcon === i && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded-lg bg-[#12121a]/90 backdrop-blur-xl border border-white/10 text-xs text-gray-300 whitespace-nowrap animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1.5 rounded-lg bg-[#12121a]/95 backdrop-blur-xl border border-white/10 text-xs text-gray-300 whitespace-nowrap animate-reveal-up">
                       {button.label}
                     </div>
                   )}
