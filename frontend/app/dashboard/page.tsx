@@ -107,7 +107,9 @@ export default function DashboardPage() {
                 details: "Zero setup fees",
                 color: "#3b82f6",
               },
-            ].map((item, i) => (
+            ].map((item, i) => {
+              const IconComponent = item.icon
+              return (
               <div
                 key={i}
                 data-scroll-reveal
@@ -126,7 +128,7 @@ export default function DashboardPage() {
                       border: `1px solid ${item.color}40`,
                     }}
                   >
-                    <item.icon className="w-6 h-6" style={{ color: item.color }} />
+                    <IconComponent className="w-6 h-6" style={{ color: item.color }} />
                   </div>
 
                   <div className="space-y-2">
@@ -153,7 +155,7 @@ export default function DashboardPage() {
                   style={{ background: `radial-gradient(circle, ${item.color}10, transparent 70%)` }}
                 />
               </div>
-            ))}
+            )})}
           </div>
 
           {/* Quick Actions */}
