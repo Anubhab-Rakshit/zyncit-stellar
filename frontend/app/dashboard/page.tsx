@@ -75,26 +75,44 @@ export default function DashboardPage() {
     const fetchUserData = async () => {
       try {
         // Get user's own NFTs (content they created/own)
-        const nftsRes = await fetch("/api/nft/my")
-
-        // Get user profile info
-        const profileRes = await fetch("/api/wallet/me")
+        const nftsRes = await fetch("/api/nft/my", {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
 
         if (nftsRes.ok) {
           const nftsData = await nftsRes.json()
+          console.log("[v0] NFT Response:", nftsData)
 
-          // Calculate real stats from user data
-          const nftCount = nftsData.count || 0
-          const totalValue = nftsData.data?.reduce((sum: number, nft: any) => sum + (nft.price || 0), 0) || 0
+          // Handle different response structures
+          let nftCount = 0
+          let totalValue = 0
+
+          // Check if response is array or has data property
+          if (Array.isArray(nftsData)) {
+            nftCount = nftsData.length
+            totalValue = nftsData.reduce((sum: number, nft: any) => sum + (nft.price || 0), 0)
+          } else if (nftsData.data && Array.isArray(nftsData.data)) {
+            nftCount = nftsData.data.length
+            totalValue = nftsData.data.reduce((sum: number, nft: any) => sum + (nft.price || 0), 0)
+          } else if (nftsData.count) {
+            nftCount = nftsData.count
+            totalValue = nftsData.totalValue || 0
+          }
+
+          console.log("[v0] Parsed stats:", { nftCount, totalValue })
 
           setStats({
-            totalEarnings: totalValue,
-            totalTokens: nftCount,
-            reach: nftCount * 5000, // Estimate based on NFT count
-            engagement: nftCount * 200,
-            growthPercentage: Math.min(Math.floor(Math.random() * 50) + 10, 100),
+            totalEarnings: totalValue || 0,
+            totalTokens: nftCount || 0,
+            reach: (nftCount || 0) * 5000,
+            engagement: (nftCount || 0) * 200,
+            growthPercentage: Math.floor(Math.random() * 50) + 10,
           })
         } else {
+          console.log("[v0] API not ok, status:", nftsRes.status, "response:", await nftsRes.text())
           // Fallback to default stats if API fails
           setStats({
             totalEarnings: 0,
@@ -105,7 +123,7 @@ export default function DashboardPage() {
           })
         }
       } catch (error) {
-        console.error("Failed to fetch user data:", error)
+        console.error("[v0] Failed to fetch user data:", error)
         // Set empty stats on error
         setStats({
           totalEarnings: 0,
@@ -132,28 +150,40 @@ export default function DashboardPage() {
           icon: BarChart3,
           label: "Total Earnings",
           value: stats.totalEarnings,
-          format: (v) => `$${(v / 1000).toFixed(1)}K`,
+          format: (v) => {
+            const num = Number(v) || 0
+            return `$${(num / 1000).toFixed(1)}K`
+          },
           color: "#3b82f6",
         },
         {
           icon: Zap,
           label: "Tokens Created",
           value: stats.totalTokens,
-          format: (v) => `${(v / 1000).toFixed(1)}K`,
+          format: (v) => {
+            const num = Number(v) || 0
+            return num === 0 ? "0" : `${(num / 1000).toFixed(1)}K`
+          },
           color: "#0284c7",
         },
         {
           icon: Users,
           label: "Total Reach",
           value: stats.reach,
-          format: (v) => `${(v / 1000000).toFixed(1)}M`,
+          format: (v) => {
+            const num = Number(v) || 0
+            return num === 0 ? "0" : `${(num / 1000000).toFixed(1)}M`
+          },
           color: "#06b6d4",
         },
         {
           icon: TrendingUp,
           label: "Growth",
           value: stats.growthPercentage,
-          format: (v) => `+${v}%`,
+          format: (v) => {
+            const num = Number(v) || 0
+            return `+${Math.floor(num)}%`
+          },
           color: "#3b82f6",
         },
       ]
