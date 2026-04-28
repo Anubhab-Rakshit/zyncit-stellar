@@ -12,21 +12,21 @@ Creators can upload media, register its fingerprint on-chain, mint NFTs, and man
 
 ### User Wallet Addresses (5+)
 
-1. `GCG34N562IX57PLLVKVC6LYQEK7VNX3HBR5KIECNT22MR5P7MOHN7ECW`
-2. `GC53LJZ4V2CLF7NTWFKVSFWSPMKSVT7TABLDVZLT7A63HFHAY4DF4MKC`
-3. `GAJDI3UZB2JGUCDDHBUQKLXYI5336YSAUIP3SKIM5MZXXHIC3IS2NK46`
-4. `GBTHKSSIXQIHXYYTJJWCRYLLMV2GRJGKW4XWSUGVRLKKXJLWIJVLX4AC`
-5. `GBSG3YI6RMKZZEYD3LRODO5OCIE54NKC2KBR6MKU5XSDFXBHHUKEIGEW`
+1. GCG34N562IX57PLLVKVC6LYQEK7VNX3HBR5KIECNT22MR5P7MOHN7ECW
+2. GC53LJZ4V2CLF7NTWFKVSFWSPMKSVT7TABLDVZLT7A63HFHAY4DF4MKC
+3. GAJDI3UZB2JGUCDDHBUQKLXYI5336YSAUIP3SKIM5MZXXHIC3IS2NK46
+4. GBTHKSSIXQIHXYYTJJWCRYLLMV2GRJGKW4XWSUGVRLKKXJLWIJVLX4AC
+5. GBSG3YI6RMKZZEYD3LRODO5OCIE54NKC2KBR6MKU5XSDFXBHHUKEIGEW
 
 ### User Onboarding Artifacts
 
 - Google Form (name, email, wallet, rating, feedback): [Feedback Form](https://docs.google.com/forms/d/e/1FAIpQLSeZZYXpnCqEGOSr-SwlU9c1rLPN9GrDHuuBLp80kRbT6HhTdA/viewform?usp=publish-editor)
 - Exported feedback sheet (Excel): [User Feedback Sheet](https://docs.google.com/spreadsheets/d/1Wlkg_i6xbI1-V893uAwyUwSFlKBpczFlUhwFRE8eaR0/edit?usp=sharing)
-- Feedback + iteration document: `docs/USER_FEEDBACK.md`
+- Feedback + iteration document: docs/USER_FEEDBACK.md
 
 ### Architecture Documentation
 
-- Architecture doc: `docs/ARCHITECTURE.md`
+- Architecture doc: docs/ARCHITECTURE.md
 
 ### Feedback Iteration Implemented
 
@@ -65,76 +65,89 @@ Improvement commit links:
 - One upload action now runs a complete backend pipeline:
   1. Media upload to IPFS (Pinata)
   2. Metadata creation + upload to IPFS
-  3. Content fingerprint registration on `ContentRegistry`
-  4. NFT mint on `ContentNFT`
+  3. Content fingerprint registration on ContentRegistry
+  4. NFT mint on ContentNFT
   5. MongoDB state sync (including tx references)
-- Wallet disconnect is wired end-to-end (`Freighter/StellarWalletsKit disconnect` + local app logout).
-- Purchase path uses royalty-enabled escrow call (`instant_settle_with_royalty`) from production backend flow.
+- Wallet disconnect is wired end-to-end (Freighter/StellarWalletsKit disconnect + local app logout).
+- Purchase path uses royalty-enabled escrow call (instant_settle_with_royalty) from production backend flow.
 - Frontend API routes now use a single normalized backend base URL helper.
 - Explorer links are aligned to Stellar testnet.
+
+# Freighter Connection : 
+<img width="3024" height="1550" alt="image" src="https://github.com/user-attachments/assets/6344465c-a40f-4b15-b8c5-587a613125bc" />
+# Homepage :
+<img width="3006" height="1248" alt="image" src="https://github.com/user-attachments/assets/edadd8b3-f9d5-4503-b5aa-67f91fa23feb" />
+# NFT Upload :
+<img width="2774" height="1480" alt="image" src="https://github.com/user-attachments/assets/1d1d8931-2399-4135-b0dc-9e4484066ffb" />
+# Wallet Balance : 
+<img width="2972" height="1332" alt="image" src="https://github.com/user-attachments/assets/cf3d4cd7-6155-47ef-bec9-16c92a7abfc0" />
+
+
+
+
 
 ## Belt Requirement Mapping
 
 ### Belt 1 (White Belt)
 
 - Wallet setup and testnet usage:
-  - `frontend/app/auth/page.tsx`
-  - `frontend/lib/wallet-kit.ts`
+  - frontend/app/auth/page.tsx
+  - frontend/lib/wallet-kit.ts
 - Wallet connect/disconnect:
-  - Connect in `frontend/app/auth/page.tsx`
-  - Disconnect in `frontend/app/wallet/page.tsx`
+  - Connect in frontend/app/auth/page.tsx
+  - Disconnect in frontend/app/wallet/page.tsx
 - XLM balance fetch and UI display:
-  - `frontend/app/wallet/page.tsx`
+  - frontend/app/wallet/page.tsx
 - Send XLM transaction on Stellar testnet with user feedback and tx hash:
-  - `frontend/app/wallet/page.tsx`
+  - frontend/app/wallet/page.tsx
 
 ### Belt 2
 
 - Multi-wallet integration via StellarWalletsKit:
-  - `frontend/lib/wallet-kit.ts`
+  - frontend/lib/wallet-kit.ts
 - Error handling (wallet not found / rejected / insufficient balance):
-  - `frontend/lib/errors.ts`
-  - `backend/src/utils/stellarError.ts`
+  - frontend/lib/errors.ts
+  - backend/src/utils/stellarError.ts
 - Contract invocation from frontend-backed API routes:
-  - Upload pipeline entry: `frontend/app/api/upload/route.ts`
-  - Buy pipeline entry: `frontend/app/api/nft/buy/route.ts`
+  - Upload pipeline entry: frontend/app/api/upload/route.ts
+  - Buy pipeline entry: frontend/app/api/nft/buy/route.ts
 - Transaction status tracking:
-  - `backend/src/services/txTracker.ts`
-  - `backend/src/controllers/tx.Controller.ts`
-  - `frontend/app/post/[id]/post-detail.tsx`
+  - backend/src/services/txTracker.ts
+  - backend/src/controllers/tx.Controller.ts
+  - frontend/app/post/[id]/post-detail.tsx
 - Event streaming endpoint:
-  - `backend/src/routes/tx.Routes.ts`
+  - backend/src/routes/tx.Routes.ts
 
 ### Belt 3
 
 - Mini dApp flows implemented (auth, upload, wallet, profile, gallery).
 - At least 3 passing tests:
-  - `backend/src/__tests__/stellarError.test.ts`
+  - backend/src/__tests__/stellarError.test.ts
 - Loading states and caching present:
-  - `frontend/lib/cache.ts`
-  - `frontend/app/content/page.tsx`
-  - `frontend/app/my-nfts/page.tsx`
-  - `frontend/app/post/[id]/post-detail.tsx`
+  - frontend/lib/cache.ts
+  - frontend/app/content/page.tsx
+  - frontend/app/my-nfts/page.tsx
+  - frontend/app/post/[id]/post-detail.tsx
 - Demo video link:
   - [Google Drive Demo](https://drive.google.com/drive/folders/17dLtEjczj6FqkgJJSdYAzHzNRuH3Avii?usp=sharing)
 
 ### Belt 4 (current implemented scope)
 
 - Inter-contract call path used in backend purchase flow:
-  - `contracts/payment_escrow/src/lib.rs` (`instant_settle_with_royalty`)
-  - `backend/src/web3/buyNFT.ts`
+  - contracts/payment_escrow/src/lib.rs (instant_settle_with_royalty)
+  - backend/src/web3/buyNFT.ts
 - CI/CD workflow:
-  - `.github/workflows/ci.yml`
+  - .github/workflows/ci.yml
 - Mobile responsive frontend pages exist across app routes.
 
 Note: Real-time buyer/seller settlement beyond current prototype scope is intentionally not claimed here.
 
 ## Core Architecture
 
-- Frontend: Next.js + TypeScript (`frontend/`)
-- Backend: Express + TypeScript (`backend/`)
-- Contracts: Soroban Rust contracts (`contracts/`)
-- Contract integration layer: `backend/src/contract-integration.ts` (details in `CONTRACT_INTEGRATION.md`)
+- Frontend: Next.js + TypeScript (frontend/)
+- Backend: Express + TypeScript (backend/)
+- Contracts: Soroban Rust contracts (contracts/)
+- Contract integration layer: backend/src/contract-integration.ts (details in CONTRACT_INTEGRATION.md)
 - DB: MongoDB
 - Storage: Pinata/IPFS
 - Wallet: Freighter and StellarWalletsKit
@@ -143,12 +156,12 @@ Note: Real-time buyer/seller settlement beyond current prototype scope is intent
 
 | Contract | Address |
 | :--- | :--- |
-| AccessControl | `CAUXZFU6GH57S5QWSPO7M2I2ZMWWIX7VA4RFXOA6AT6724D5PTKBZ22A` |
-| ContentNFT | `CA7VIJCB4D3A7LU2UZHIQDKKCREREBHRT6RLFS35NPT3GKCBMV73WBRW` |
-| RoyaltyManager | `CBUKJDKA2DSQ4HF5IGAQDUJJ7TLDU3C44ZNA3D7T2IKEFG77T7XMNITS` |
-| PaymentEscrow | `CC565PKCVD7OODIUP37R3UWRSDVYVPTWAIDKF22D3GNF6WCIYTT4VCGY` |
-| SubscriptionManager | `CAPJ45XLMHCS75XDYCYJRGTVCXGFZM5FIGP2EBNV7A3C6WTL7COC5HC5` |
-| ContentRegistry | `CBODPDB5DDR624WR5AFY4ISLYBI5CE3ENFZRZTDAP4FC5M4O6VRX5XKX` |
+| AccessControl | CAUXZFU6GH57S5QWSPO7M2I2ZMWWIX7VA4RFXOA6AT6724D5PTKBZ22A |
+| ContentNFT | CA7VIJCB4D3A7LU2UZHIQDKKCREREBHRT6RLFS35NPT3GKCBMV73WBRW |
+| RoyaltyManager | CBUKJDKA2DSQ4HF5IGAQDUJJ7TLDU3C44ZNA3D7T2IKEFG77T7XMNITS |
+| PaymentEscrow | CC565PKCVD7OODIUP37R3UWRSDVYVPTWAIDKF22D3GNF6WCIYTT4VCGY |
+| SubscriptionManager | CAPJ45XLMHCS75XDYCYJRGTVCXGFZM5FIGP2EBNV7A3C6WTL7COC5HC5 |
+| ContentRegistry | CBODPDB5DDR624WR5AFY4ISLYBI5CE3ENFZRZTDAP4FC5M4O6VRX5XKX |
 
 ## Deployment Verification (Stellar Testnet)
 
@@ -163,21 +176,20 @@ Note: Real-time buyer/seller settlement beyond current prototype scope is intent
 
 Set these values before running locally:
 
-- `NEXT_PUBLIC_API_BASE_URL`
-- `RPC_URL`
-- `PRIVATE_KEY`
-- `PINATA_JWT`
-- `PINATA_GATEWAY`
-- `JWT_SECRET`
-- `MONGO_URI`
-- `CONTRACT_ADDRESS_CONTENTNFT`
-- `CONTRACT_ADDRESS_CONTENTREGISTRY`
-- `CONTRACT_ADDRESS_PAYMENTESCROW`
-- `CONTRACT_ADDRESS_ROYALTYMANAGER`
+- NEXT_PUBLIC_API_BASE_URL
+- RPC_URL
+- PRIVATE_KEY
+- PINATA_JWT
+- PINATA_GATEWAY
+- JWT_SECRET
+- MONGO_URI
+- CONTRACT_ADDRESS_CONTENTNFT
+- CONTRACT_ADDRESS_CONTENTREGISTRY
+- CONTRACT_ADDRESS_PAYMENTESCROW
+- CONTRACT_ADDRESS_ROYALTYMANAGER
 
 ## Local Run
 
-```bash
 # backend
 cd backend
 npm install
@@ -187,14 +199,12 @@ npm run dev
 cd ../frontend
 npm install
 npm run dev
-```
 
 ## Verification Commands
 
-```bash
 # backend tests (includes 3 passing tests)
 cd backend && npm test
 
 # frontend build
 cd frontend && npm run build
-```
+
