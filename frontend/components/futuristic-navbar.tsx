@@ -50,34 +50,30 @@ export default function FuturisticNavbar() {
           {/* Desktop Navbar */}
           <div className="hidden md:flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <img src="/logo.png" alt="ZYNC" className="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_20px_rgba(59,130,246,0.4)]" />
-              <span className="font-[family-name:var(--font-display)] text-xl md:text-2xl font-black tracking-wider gradient-text">
+              <img src="/logo.png" alt="ZYNC" className="w-8 h-8 md:w-10 md:h-10" />
+              <span className="text-xl md:text-2xl font-bold tracking-tight text-white">
                 ZYNC
               </span>
             </Link>
 
             {/* Centered navigation icons */}
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
               {iconButtons.map((button, i) => (
                 <Link
                   key={i}
                   href={button.href}
-                  className="group relative w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/10 backdrop-blur-xl bg-[#12121a]/50 hover:bg-[#1a1a2e]/70 transition-all duration-300 hover:scale-110 hover:border-[#3b82f6]/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                  className="group relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-transparent hover:border-gray-700 hover:bg-gray-800/50 transition-all duration-200"
                   onMouseEnter={() => setHoveredIcon(i)}
                   onMouseLeave={() => setHoveredIcon(null)}
                   aria-label={button.label}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <button.icon className="w-5 h-5 text-gray-400 group-hover:text-[#3b82f6] transition-colors duration-300" />
-                  </div>
+                  <button.icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-200" />
 
                   {hoveredIcon === i && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 px-3 py-1.5 rounded-lg bg-[#12121a]/95 backdrop-blur-xl border border-white/10 text-xs text-gray-300 whitespace-nowrap animate-reveal-up">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded-md bg-gray-800 border border-gray-700 text-xs font-medium text-white whitespace-nowrap animate-in fade-in slide-in-from-top-1 duration-200">
                       {button.label}
                     </div>
                   )}
-
-                  <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-[#3b82f6]/20 to-[#0284c7]/20 blur-xl" />
                 </Link>
               ))}
             </div>
@@ -87,9 +83,9 @@ export default function FuturisticNavbar() {
               {isAuthenticated ? (
                 <>
                   {/* Show wallet address */}
-                  <div className="px-4 py-2 rounded-full border border-[#3b82f6]/30 backdrop-blur-xl bg-[#12121a]/50 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-xs md:text-sm font-mono text-[#3b82f6]">
+                  <div className="px-4 py-2 rounded-full border border-gray-800 bg-gray-900 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span className="text-xs md:text-sm font-mono text-gray-300">
                       {address?.slice(0, 6)}...{address?.slice(-4)}
                     </span>
                   </div>
@@ -97,24 +93,18 @@ export default function FuturisticNavbar() {
                   {/* Logout button */}
                   <button
                     onClick={logout}
-                    className="group relative px-4 md:px-6 py-2 md:py-3 rounded-full border border-red-500/30 backdrop-blur-xl bg-[#12121a]/50 hover:bg-red-500/10 transition-all duration-300 hover:scale-105 hover:border-red-500/60 hover:shadow-[0_0_20px_rgba(220,38,38,0.3)]"
+                    className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-800 hover:bg-gray-800 transition-colors"
                   >
-                    <div className="relative flex items-center gap-2 text-xs md:text-sm font-[family-name:var(--font-display)] tracking-wider">
-                      <LogOut className="w-4 h-4 text-red-500" />
-                      <span className="text-red-500 hidden sm:inline">Logout</span>
-                    </div>
+                    <LogOut className="w-4 h-4 text-gray-400" />
                   </button>
                 </>
               ) : (
                 <>
                   <Link
                     href="/auth"
-                    className="group relative px-4 md:px-6 py-2 md:py-3 rounded-full border border-[#3b82f6]/30 backdrop-blur-xl bg-[#12121a]/50 hover:bg-[#1a1a2e]/70 transition-all duration-300 hover:scale-105 hover:border-[#3b82f6]/60 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] overflow-hidden"
+                    className="flex items-center gap-2 px-6 py-2 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
                   >
-                    <div className="relative flex items-center gap-2 text-xs md:text-sm font-[family-name:var(--font-display)] tracking-wider">
-                      <LogIn className="w-4 h-4 text-[#3b82f6]" />
-                      <span className="text-[#3b82f6] hidden sm:inline">Sign In</span>
-                    </div>
+                    <span className="text-sm">Sign In</span>
                   </Link>
 
             
@@ -125,18 +115,18 @@ export default function FuturisticNavbar() {
 
           <div className="flex md:hidden items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="ZYNC" className="w-8 h-8 drop-shadow-[0_0_15px_rgba(59,130,246,0.4)]" />
-              <span className="font-[family-name:var(--font-display)] text-xl font-black tracking-wider gradient-text">
+              <img src="/logo.png" alt="ZYNC" className="w-8 h-8" />
+              <span className="text-xl font-bold tracking-tight text-white">
                 ZYNC
               </span>
             </Link>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="relative w-12 h-12 rounded-full border border-white/10 backdrop-blur-xl bg-[#12121a]/90 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:border-[#3b82f6]/50 z-50"
+              className="w-10 h-10 rounded-full border border-gray-800 bg-gray-900 flex items-center justify-center hover:bg-gray-800 transition-colors z-50"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-[#3b82f6]" /> : <Menu className="w-5 h-5 text-gray-400" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-gray-400" />}
             </button>
           </div>
         </div>
@@ -151,14 +141,14 @@ export default function FuturisticNavbar() {
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          <div className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] z-50 md:hidden animate-in slide-in-from-right duration-300">
-            <div className="h-full glass border-l border-white/10 p-6 overflow-y-auto">
+          <div className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] z-50 md:hidden animate-in slide-in-from-right duration-300 bg-[#0a0a0a] border-l border-gray-800 shadow-2xl">
+            <div className="h-full p-6 overflow-y-auto">
               {/* Header */}
               <div className="flex items-center justify-between mb-8">
-                <div className="font-[family-name:var(--font-display)] text-2xl font-black gradient-text">ZYNC</div>
+                <div className="text-2xl font-bold tracking-tight text-white">ZYNC</div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-10 h-10 rounded-full border border-white/10 bg-[#12121a]/50 flex items-center justify-center hover:scale-110 transition-transform"
+                  className="w-10 h-10 rounded-full border border-gray-800 bg-gray-900 flex items-center justify-center hover:bg-gray-800 transition-colors"
                 >
                   <X className="w-5 h-5 text-gray-400" />
                 </button>
@@ -171,35 +161,32 @@ export default function FuturisticNavbar() {
                     key={i}
                     href={button.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-[#0a0a0f]/50 hover:bg-[#1a1a2e]/70 hover:border-[#3b82f6]/30 transition-all duration-300 group"
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border border-transparent hover:bg-gray-800 hover:border-gray-700 transition-all duration-200 group"
                   >
-                    <button.icon className="w-5 h-5 text-gray-400 group-hover:text-[#3b82f6] transition-colors" />
-                    <span className="text-gray-300 group-hover:text-white transition-colors">{button.label}</span>
+                    <button.icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                    <span className="text-gray-300 group-hover:text-white font-medium transition-colors">{button.label}</span>
                   </Link>
                 ))}
               </div>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
+              <div className="h-px bg-gray-800 mb-8" />
 
               {/* Auth buttons */}
               <div className="space-y-3">
                 {isAuthenticated ? (
                   <>
                     {/* Show wallet address */}
-                    <div className="w-full px-4 py-2 rounded-xl border border-[#3b82f6]/30 bg-[#12121a]/50 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-sm font-mono text-[#3b82f6]">
+                    <div className="w-full px-4 py-3 rounded-xl border border-gray-800 bg-gray-900 flex items-center justify-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <span className="text-sm font-mono text-gray-300">
                         {address?.slice(0, 6)}...{address?.slice(-4)}
                       </span>
                     </div>
 
                     {/* Logout button */}
-                    <button onClick={logout} className="relative w-full py-4 rounded-xl overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-[#0284c7] to-[#dc2626] animate-gradient-shift" />
-                      <div className="relative flex items-center justify-center gap-2 font-[family-name:var(--font-display)] font-bold tracking-wider">
-                        <LogOut className="w-5 h-5 text-white" />
-                        <span className="text-white">Logout</span>
-                      </div>
+                    <button onClick={logout} className="w-full py-4 rounded-xl bg-gray-900 border border-gray-800 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                      <LogOut className="w-5 h-5 text-gray-400" />
+                      <span className="text-gray-300 font-medium">Logout</span>
                     </button>
                   </>
                 ) : (
@@ -207,20 +194,15 @@ export default function FuturisticNavbar() {
                     <Link
                       href="/auth"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full py-4 rounded-xl border border-[#3b82f6]/30 bg-[#12121a]/50 hover:bg-[#1a1a2e]/70 transition-all duration-300 hover:border-[#3b82f6]/60 block"
+                      className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
                     >
-                      <div className="flex items-center justify-center gap-2 font-[family-name:var(--font-display)] tracking-wider">
-                        <LogIn className="w-5 h-5 text-[#3b82f6]" />
-                        <span className="text-[#3b82f6]">Sign In</span>
-                      </div>
+                      <LogIn className="w-5 h-5" />
+                      <span>Sign In</span>
                     </Link>
 
-                    <button className="relative w-full py-4 rounded-xl overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6] via-[#0284c7] to-[#dc2626] animate-gradient-shift" />
-                      <div className="relative flex items-center justify-center gap-2 font-[family-name:var(--font-display)] font-bold tracking-wider">
-                        <UserPlus className="w-5 h-5 text-white" />
-                        <span className="text-white">Sign Up</span>
-                      </div>
+                    <button className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-[#111] border border-gray-800 text-white font-semibold hover:bg-gray-900 transition-colors">
+                      <UserPlus className="w-5 h-5" />
+                      <span>Sign Up</span>
                     </button>
                   </>
                 )}

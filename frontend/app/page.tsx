@@ -96,29 +96,20 @@ export default function HomePage() {
       <main className="relative min-h-screen max-w-[100vw] overflow-x-hidden">
         {/* Hero Section - Clean and Professional */}
         <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          {/* Atmospheric background elements */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div
-              className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#3b82f6]/5 blur-[120px]"
-              style={{ animation: "float 20s ease-in-out infinite" }}
-            />
-            <div
-              className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#0284c7]/5 blur-[120px]"
-              style={{ animation: "float 25s ease-in-out infinite reverse" }}
-            />
-          </div>
+          {/* Atmospheric background elements - Subtle */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-[#0a0a0a] to-[#0a0a0a]" />
 
           {/* Main content */}
-          <div className="relative z-10 max-w-6xl mx-auto text-center space-y-8 w-full">
+          <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8 w-full">
             {/* Professional Logo - ZYNC */}
             <div
-              className="flex justify-center mb-12 animate-fadeInScale"
+              className="flex justify-center mb-8 animate-fadeInScale"
               style={{ animationDelay: "0.2s" }}
             >
               <img
                 src="/logo.png"
                 alt="ZYNC"
-                className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 drop-shadow-[0_0_40px_rgba(59,130,246,0.6)] animate-pulse-glow"
+                className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28"
               />
             </div>
 
@@ -128,25 +119,12 @@ export default function HomePage() {
               style={{ animationDelay: "0.4s" }}
             >
               <h1
-                className="font-[family-name:var(--font-display)] text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-wider"
-                style={{
-                  letterSpacing: "0.08em",
-                  background: "linear-gradient(135deg, #3b82f6 0%, #0284c7 50%, #06b6d4 100%)",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 40px rgba(59, 130, 246, 0.3))",
-                }}
+                className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight text-white"
               >
-                ZYNC
+                Decentralized Publishing, <br className="hidden md:block" />
+                <span className="text-gray-500">Refined.</span>
               </h1>
-              <p
-                className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-3xl font-bold text-gray-300 tracking-widest"
-                style={{ letterSpacing: "0.1em" }}
-              >
-                DECENTRALIZED PUBLISHING
-              </p>
-              <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
                 Tokenize your creativity, connect with the creator economy, and build sustainable digital ownership on the blockchain.
               </p>
             </div>
@@ -156,16 +134,9 @@ export default function HomePage() {
               className="flex justify-center pt-8 animate-fadeInScale"
               style={{ animationDelay: "0.6s" }}
             >
-              <a href="/gallery" className="group relative px-8 md:px-12 py-4 md:py-6 font-[family-name:var(--font-display)] text-sm md:text-lg font-bold tracking-wider overflow-hidden transition-all duration-500 hover:scale-110">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-[#3b82f6] via-[#0284c7] to-[#06b6d4] animate-gradient-shift opacity-100"
-                  style={{ filter: "blur(1px)" }}
-                />
-                <div className="absolute inset-[2px] bg-[#0a0a0f] group-hover:bg-[#0f1419] transition-colors duration-300" />
-                <span className="relative flex items-center gap-3 text-white group-hover:text-[#06b6d4] transition-colors duration-300 whitespace-nowrap">
-                  EXPLORE GALLERY
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-                </span>
+              <a href="/gallery" className="group relative flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors duration-200">
+                Explore Gallery
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
               </a>
             </div>
 
@@ -183,40 +154,27 @@ export default function HomePage() {
                   key={i}
                   data-scroll-reveal
                   id={`stat-${i}`}
-                  className={`glass rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:scale-[1.08] hover:-translate-y-3 cursor-pointer group ${
+                  className={`p-6 sm:p-8 rounded-2xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm transition-all duration-500 hover:border-gray-700 cursor-pointer group ${
                     visibleElements.has(`stat-${i}`)
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-10"
                   }`}
-                  style={{
-                    boxShadow: `0 20px 40px rgba(0, 0, 0, 0.4)`,
-                  }}
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <stat.icon
-                      className="w-10 h-10 mx-auto transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"
-                      style={{ color: stat.color }}
+                      className="w-8 h-8 text-gray-400 group-hover:text-white transition-colors"
                     />
                     <div
-                      className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-black animate-number-counter"
-                      style={{ color: stat.color }}
+                      className="text-3xl sm:text-4xl font-bold text-white tracking-tight animate-number-counter"
                     >
                       {stat.value}
                     </div>
                     <div
-                      className="font-[family-name:var(--font-display)] text-xs sm:text-sm tracking-widest text-gray-400 group-hover:text-gray-300 transition-colors"
+                      className="text-sm font-medium text-gray-500 group-hover:text-gray-400 transition-colors"
                     >
                       {stat.label}
                     </div>
                   </div>
-
-                  {/* Glow background on hover */}
-                  <div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none"
-                    style={{
-                      background: `radial-gradient(circle, ${stat.color}20, transparent 70%)`,
-                    }}
-                  />
                 </div>
               ))}
             </div>
@@ -224,31 +182,24 @@ export default function HomePage() {
         </section>
 
         {/* Features Section */}
-        <section className="relative py-20 md:py-32 px-4 sm:px-6 lg:px-8">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#3b82f6] to-transparent opacity-50" />
+        <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#0a0a0a]">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-800 to-transparent" />
 
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-20">
               <h2
                 data-scroll-reveal
                 id="features-title"
-                className={`font-[family-name:var(--font-display)] text-4xl sm:text-5xl md:text-6xl font-black tracking-wider mb-6 transition-all duration-500 ${
+                className={`text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-6 transition-all duration-500 ${
                   visibleElements.has("features-title")
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
                 }`}
-                style={{
-                  letterSpacing: "0.1em",
-                  background: "linear-gradient(135deg, #3b82f6 0%, #0284c7 50%, #06b6d4 100%)",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
               >
-                CORE FEATURES
+                Built for the modern web.
               </h2>
-              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Everything you need to publish, monetize, and grow on the blockchain
+              <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+                Everything you need to publish, monetize, and grow on the blockchain. Without the complexity.
               </p>
             </div>
 
@@ -280,19 +231,18 @@ export default function HomePage() {
                   key={i}
                   data-scroll-reveal
                   id={`feature-${i}`}
-                  className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.05] hover:-translate-y-2 ${
+                  className={`group rounded-2xl p-8 border border-gray-800 bg-[#111] transition-all duration-500 hover:border-gray-600 ${
                     visibleElements.has(`feature-${i}`)
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-10"
                   }`}
                 >
                   <div className="space-y-4">
-                    <feature.icon
-                      className="w-12 h-12 transition-all duration-300 group-hover:scale-110"
-                      style={{ color: feature.color }}
-                    />
-                    <h3 className="text-xl font-bold text-white">{feature.title}</h3>
-                    <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                    <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center mb-6">
+                      <feature.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white tracking-tight">{feature.title}</h3>
+                    <p className="text-gray-400 leading-relaxed text-sm">{feature.description}</p>
                   </div>
                 </div>
               ))}
@@ -302,30 +252,23 @@ export default function HomePage() {
 
         {/* Featured Content Section */}
         {featuredNFTs.length > 0 && (
-          <section className="relative py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-[#0284c7]/5 to-transparent">
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0284c7] to-transparent opacity-50" />
+          <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#0a0a0a]">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-800 to-transparent" />
 
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <h2
                   data-scroll-reveal
                   id="featured-title"
-                  className={`font-[family-name:var(--font-display)] text-4xl sm:text-5xl md:text-6xl font-black tracking-wider transition-all duration-500 ${
+                  className={`text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white transition-all duration-500 ${
                     visibleElements.has("featured-title")
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-10"
                   }`}
-                  style={{
-                    letterSpacing: "0.1em",
-                    background: "linear-gradient(135deg, #3b82f6 0%, #0284c7 50%, #06b6d4 100%)",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
                 >
-                  FEATURED CONTENT
+                  Featured Content
                 </h2>
-                <p className="text-gray-400 mt-4">Discover the latest creations from our community</p>
+                <p className="text-gray-400 mt-4 text-lg">Discover the latest creations from our community.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
@@ -335,29 +278,28 @@ export default function HomePage() {
                     href={`/post/${nft._id}`}
                     data-scroll-reveal
                     id={`nft-${i}`}
-                    className={`group card-premium rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer ${
+                    className={`group rounded-2xl border border-gray-800 bg-[#111] overflow-hidden transition-all duration-300 hover:border-gray-600 cursor-pointer ${
                       visibleElements.has(`nft-${i}`)
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-10"
                     }`}
                   >
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-48 overflow-hidden bg-gray-900">
                       <img
                         src={resolveMediaUrl(nft.imageURL)}
                         alt={nft.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg"
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
                     </div>
 
-                    <div className="p-4 space-y-3">
-                      <h3 className="text-lg font-semibold text-white line-clamp-2 group-hover:text-[#06b6d4] transition-colors">
+                    <div className="p-5 space-y-2">
+                      <h3 className="text-lg font-medium text-white line-clamp-1 group-hover:text-gray-300 transition-colors">
                         {nft.name}
                       </h3>
-                      <p className="text-sm text-gray-400">{nft.artistName}</p>
+                      <p className="text-sm text-gray-500 line-clamp-1">{nft.artistName}</p>
                     </div>
                   </a>
                 ))}
@@ -367,43 +309,31 @@ export default function HomePage() {
         )}
 
         {/* CTA Section */}
-        <section className="relative py-20 md:py-32 px-4 sm:px-6 lg:px-8">
+        <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#050505]">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-800 to-transparent" />
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h2
               data-scroll-reveal
               id="cta-title"
-              className={`font-[family-name:var(--font-display)] text-4xl sm:text-5xl md:text-6xl font-black tracking-wider transition-all duration-500 ${
+              className={`text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white transition-all duration-500 ${
                 visibleElements.has("cta-title")
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"
               }`}
-              style={{
-                letterSpacing: "0.1em",
-                background: "linear-gradient(135deg, #3b82f6 0%, #0284c7 50%, #06b6d4 100%)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
             >
-              Ready to Create?
+              Start building today.
             </h2>
 
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Join thousands of creators revolutionizing digital ownership. Start tokenizing your content today.
+              Join thousands of creators revolutionizing digital ownership. The new standard for content is here.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="/upload" className="group relative px-8 py-4 font-[family-name:var(--font-display)] font-bold tracking-wider overflow-hidden transition-all duration-500 hover:scale-105">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6] via-[#0284c7] to-[#06b6d4] animate-gradient-shift opacity-100" style={{ filter: "blur(1px)" }} />
-                <div className="absolute inset-[2px] bg-[#0a0a0f] group-hover:bg-[#0f1419] transition-colors duration-300" />
-                <span className="relative text-white group-hover:text-[#06b6d4] transition-colors duration-300">
-                  GET STARTED
-                </span>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <a href="/upload" className="flex items-center justify-center px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors">
+                Get Started
               </a>
-              <a href="/gallery" className="group relative px-8 py-4 font-[family-name:var(--font-display)] font-bold tracking-wider border border-[#3b82f6]/50 rounded-lg transition-all duration-300 hover:scale-105">
-                <span className="text-[#3b82f6] group-hover:text-[#06b6d4] transition-colors duration-300">
-                  EXPLORE
-                </span>
+              <a href="/gallery" className="flex items-center justify-center px-8 py-4 bg-[#111] text-white font-semibold rounded-full border border-gray-700 hover:bg-gray-900 transition-colors">
+                Explore Platform
               </a>
             </div>
           </div>
