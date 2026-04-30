@@ -5,7 +5,6 @@ import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { ExternalLink, Trash2, Upload, Share2 } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
-import ParallaxOrbBackground from "@/components/parallax-orb-background"
 import { cacheGet, cacheSet } from "@/lib/cache"
 import { resolveMediaUrl } from "@/lib/media"
 
@@ -92,18 +91,16 @@ export default function MyNFTsPage() {
   }
 
   return (
-    <>
-      <ParallaxOrbBackground />
-
+    <div className="relative min-h-screen bg-[#0a0a0a]">
       <FuturisticNavbar />
 
-      <main className="relative min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <main className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-wider mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+          <div className="text-center mb-16 space-y-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white">
               My Creations
             </h1>
-            <p className="text-gray-400 text-lg">Your tokenized masterpieces</p>
+            <p className="text-gray-400 text-lg">Your tokenized masterpieces.</p>
           </div>
 
           {loading ? (
@@ -113,15 +110,15 @@ export default function MyNFTsPage() {
             </div>
           ) : nfts.length === 0 ? (
             <div className="text-center py-20">
-              <div className="glass rounded-3xl p-12 max-w-lg mx-auto">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-6">
-                  <Upload className="w-12 h-12 text-blue-400" />
+              <div className="rounded-2xl border border-gray-800 bg-[#111] p-12 max-w-lg mx-auto">
+                <div className="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-6">
+                  <Upload className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">No NFTs Yet</h3>
-                <p className="text-gray-400 mb-8">Start creating your digital legacy</p>
+                <h3 className="text-2xl font-bold tracking-tight text-white mb-4">No NFTs Yet</h3>
+                <p className="text-gray-400 mb-8 font-medium">Start creating your digital legacy</p>
                 <a
                   href="/upload"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:scale-105 transition-transform"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
                 >
                   <Upload className="w-5 h-5" />
                   Upload Your First NFT
@@ -133,46 +130,44 @@ export default function MyNFTsPage() {
               {nfts.map((nft, index) => (
                 <div
                   key={nft._id}
-                  className="group relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+                  className="animate-in fade-in slide-in-from-bottom-4 duration-500"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-400/20 via-purple-500/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
-
-                  <div className="relative rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.45)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)] transition-all duration-300">
-                    <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 shadow-2xl">
+                  <div className="relative rounded-2xl border border-gray-800 bg-[#111] p-6 transition-colors duration-300 hover:border-gray-600 hover:bg-[#161616]">
+                    <div className="relative aspect-square rounded-xl overflow-hidden mb-4 bg-gray-900 border border-gray-800">
                       <img
                         src={resolveMediaUrl(nft.imageURL)}
                         alt={nft.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg"
                         }}
                       />
                     </div>
 
-                    <h3 className="text-xl font-bold text-white mb-2 truncate">{nft.name}</h3>
+                    <h3 className="text-xl font-bold tracking-tight text-white mb-2 truncate">{nft.name}</h3>
                     <p className="text-sm text-gray-400 mb-4 line-clamp-2">{nft.description}</p>
 
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs text-blue-400 font-mono">Token #{nft.tokenId}</span>
-                      <span className="text-xs text-gray-500">{new Date(nft.createdAt).toLocaleDateString()}</span>
+                    <div className="flex items-center justify-between mb-4 pt-4 border-t border-gray-800">
+                      <span className="text-xs font-medium text-gray-300 font-mono">Token #{nft.tokenId}</span>
+                      <span className="text-xs font-medium text-gray-500">{new Date(nft.createdAt).toLocaleDateString()}</span>
                     </div>
 
                     <div className="flex gap-2">
                       <button
                         onClick={() => router.push(`/post/${nft._id}`)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-400 text-sm hover:bg-blue-500/20 transition-all"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-white font-medium text-sm hover:bg-gray-700 transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />
                         View
                       </button>
                       <button
                         onClick={() => sharePost(nft)}
-                        className="p-2 rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                        className="p-2 rounded-lg border border-gray-800 bg-[#111] text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
                       >
                         <Share2 className="w-4 h-4" />
                       </button>
-                      <button className="p-2 rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                      <button className="p-2 rounded-lg border border-gray-800 bg-[#111] text-gray-400 hover:text-red-400 hover:bg-gray-800 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -183,6 +178,6 @@ export default function MyNFTsPage() {
           )}
         </div>
       </main>
-    </>
+    </div>
   )
 }

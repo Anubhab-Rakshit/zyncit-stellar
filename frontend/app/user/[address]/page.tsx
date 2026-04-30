@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { Calendar, ExternalLink } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
-import ParallaxOrbBackground from "@/components/parallax-orb-background"
 import { getBackendApiBaseUrl } from "@/lib/backend-url"
 import { resolveMediaUrl } from "@/lib/media"
 
@@ -70,43 +69,39 @@ export default function UserProfilePage() {
 
   if (loading) {
     return (
-      <>
-        <ParallaxOrbBackground />
+      <div className="relative min-h-screen bg-[#0a0a0a]">
         <FuturisticNavbar />
         <main className="relative min-h-screen flex items-center justify-center">
           <div className="text-center text-gray-400">
-            <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-blue-500/20 border-t-blue-500 mb-4" />
-            <p>Loading profile...</p>
+            <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-gray-600 border-t-white mb-4" />
+            <p className="font-medium">Loading profile...</p>
           </div>
         </main>
-      </>
+      </div>
     )
   }
 
   if (!user) {
     return (
-      <>
-        <ParallaxOrbBackground />
+      <div className="relative min-h-screen bg-[#0a0a0a]">
         <FuturisticNavbar />
         <main className="relative min-h-screen flex items-center justify-center">
-          <div className="text-center text-gray-400">
+          <div className="text-center text-gray-400 font-medium">
             <p>User not found</p>
           </div>
         </main>
-      </>
+      </div>
     )
   }
 
   return (
-    <>
-      <ParallaxOrbBackground />
-
+    <div className="relative min-h-screen bg-[#0a0a0a]">
       <FuturisticNavbar />
 
-      <main className="relative min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <main className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
-          <div className="glass rounded-3xl p-0 mb-12 shadow-2xl overflow-hidden">
+          <div className="rounded-2xl border border-gray-800 bg-[#111] mb-12 overflow-hidden">
             <div
               className="h-40 w-full"
               style={{
@@ -118,26 +113,26 @@ export default function UserProfilePage() {
             <div className="p-8">
             <div className="flex flex-col md:flex-row items-center gap-8">
               {/* Avatar */}
-              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/30 shadow-2xl flex-shrink-0">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-900 bg-[#111] flex-shrink-0 -mt-24">
                 {user.avatar ? (
                   <img src={user.avatar || "/placeholder.svg"} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center text-4xl font-bold text-blue-400">
+                  <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-gray-500">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
 
               {/* Info */}
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-4xl font-black text-white mb-2">{user.name}</h1>
-                <p className="text-sm uppercase tracking-[0.2em] mb-2" style={{ color: user.accentColor || "#3b82f6" }}>
+              <div className="flex-1 text-center md:text-left mt-4 md:mt-0">
+                <h1 className="text-4xl font-bold tracking-tight text-white mb-1">{user.name}</h1>
+                <p className="text-sm font-medium mb-3 text-gray-400">
                   {user.showcaseTitle || "My Creation Vault"}
                 </p>
-                <p className="text-blue-400 font-mono text-sm mb-4">
+                <p className="text-gray-500 font-mono text-sm mb-4">
                   {user.address.slice(0, 10)}...{user.address.slice(-8)}
                 </p>
-                {user.bio && <p className="text-gray-400 mb-4">{user.bio}</p>}
+                {user.bio && <p className="text-gray-300 mb-6">{user.bio}</p>}
 
                 <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -156,7 +151,7 @@ export default function UserProfilePage() {
 
           {/* NFTs Grid */}
           <div>
-            <h2 className="text-3xl font-black text-white mb-8">{user.showcaseTitle || "Created NFTs"}</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-white mb-8 border-t border-gray-800 pt-8">{user.showcaseTitle || "Created NFTs"}</h2>
 
             {nfts.length === 0 ? (
               <div className="text-center text-gray-400 py-20">
@@ -167,26 +162,23 @@ export default function UserProfilePage() {
                 {nfts.map((nft, index) => (
                   <div
                     key={nft._id}
-                    className="group relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    className="animate-in fade-in slide-in-from-bottom-4 duration-500"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/20 via-purple-500/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
-
-                    <div className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300">
-                      <div className="relative aspect-square rounded-xl overflow-hidden mb-3 shadow-lg">
+                    <div className="relative rounded-2xl border border-gray-800 bg-[#111] p-4 transition-colors hover:border-gray-600 hover:bg-[#161616]">
+                      <div className="relative aspect-square rounded-xl overflow-hidden mb-4 border border-gray-800 bg-gray-900">
                         <img
                           src={resolveMediaUrl(nft.imageURL)}
                           alt={nft.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                           onError={(e) => {
                             e.currentTarget.src = "/placeholder.svg"
                           }}
                         />
                       </div>
 
-                      <h3 className="text-lg font-bold text-white mb-1 truncate">{nft.name}</h3>
-                      <p className="text-sm text-gray-400 line-clamp-2 mb-2">{nft.description}</p>
-            
+                      <h3 className="text-lg font-semibold tracking-tight text-white mb-1 truncate">{nft.name}</h3>
+                      <p className="text-sm text-gray-400 line-clamp-2">{nft.description}</p>
                     </div>
                   </div>
                 ))}
@@ -195,6 +187,6 @@ export default function UserProfilePage() {
           </div>
         </div>
       </main>
-    </>
+    </div>
   )
 }

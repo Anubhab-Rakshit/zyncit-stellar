@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Users, Coins, ArrowRight, Rocket, Star, Lock } from "lucide-react"
 import LoadingAnimation from "@/components/loading-animation"
 import FuturisticNavbar from "@/components/futuristic-navbar"
-import AnimatedBackground from "@/components/animated-background"
 import { resolveMediaUrl } from "@/lib/media"
 
 interface NFT {
@@ -86,19 +85,14 @@ export default function HomePage() {
   }, [])
 
   return (
-    <>
+    <div className="bg-[#0a0a0a]">
       {isLoading && <LoadingAnimation onComplete={() => setIsLoading(false)} />}
-
-      <AnimatedBackground />
 
       <FuturisticNavbar />
 
       <main className="relative min-h-screen max-w-[100vw] overflow-x-hidden">
         {/* Hero Section - Clean and Professional */}
         <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          {/* Atmospheric background elements - Subtle */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-[#0a0a0a] to-[#0a0a0a]" />
-
           {/* Main content */}
           <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8 w-full">
             {/* Professional Logo - ZYNC */}
@@ -339,6 +333,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-    </>
+    </div>
   )
 }

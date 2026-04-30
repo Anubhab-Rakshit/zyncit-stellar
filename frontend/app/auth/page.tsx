@@ -30,111 +30,10 @@ export default function AuthPage() {
   const [status, setStatus] = useState<AuthStatus>("detect")
   const [toasts, setToasts] = useState<Toast[]>([])
   const [copiedAddress, setCopiedAddress] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const { login } = useAuth()
   const router = useRouter()
   const [walletCount, setWalletCount] = useState(0)
 
-  // Liquid light wave background animation
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-
-    const particles: Array<{
-      x: number
-      y: number
-      vx: number
-      vy: number
-      size: number
-      color: string
-      opacity: number
-    }> = []
-
-    // Create liquid light particles
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 3 + 1,
-        color: ["#00d4ff", "#b624ff", "#00ffa3"][Math.floor(Math.random() * 3)],
-        opacity: Math.random() * 0.5 + 0.3,
-      })
-    }
-
-    let animationFrame: number
-
-    const animate = () => {
-      ctx.fillStyle = "rgba(10, 10, 15, 0.05)"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      particles.forEach((particle, i) => {
-        particle.x += particle.vx
-        particle.y += particle.vy
-
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1
-
-        // Draw particle
-        ctx.beginPath()
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-        ctx.fillStyle = particle.color
-        ctx.globalAlpha = particle.opacity
-        ctx.fill()
-
-        // Draw connections
-        particles.slice(i + 1).forEach((otherParticle) => {
-          const dx = particle.x - otherParticle.x
-          const dy = particle.y - otherParticle.y
-          const distance = Math.sqrt(dx * dx + dy * dy)
-
-          if (distance < 150) {
-            ctx.beginPath()
-            ctx.moveTo(particle.x, particle.y)
-            ctx.lineTo(otherParticle.x, otherParticle.y)
-            ctx.strokeStyle = particle.color
-            ctx.globalAlpha = (1 - distance / 150) * 0.2
-            ctx.lineWidth = 0.5
-            ctx.stroke()
-          }
-        })
-      })
-
-      ctx.globalAlpha = 1
-      animationFrame = requestAnimationFrame(animate)
-    }
-
-    animate()
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-
-    window.addEventListener("resize", handleResize)
-
-    return () => {
-      cancelAnimationFrame(animationFrame)
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [])
-
-  // Track mouse position for cursor spotlight
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
 
   // Check for Freighter
   useEffect(() => {
@@ -271,63 +170,41 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-[#0a0a0f] via-[#12121a] to-[#1a1a2e]">
-      {/* Animated liquid background canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-0" style={{ mixBlendMode: "screen" }} />
-
-      {/* Cursor spotlight effect */}
-      <div
-        className="pointer-events-none fixed z-10 h-96 w-96 rounded-full opacity-20 blur-3xl transition-all duration-300"
-        style={{
-          background: "radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 70%)",
-          left: mousePosition.x - 192,
-          top: mousePosition.y - 192,
-        }}
-      />
-
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a]">
       {/* Main content */}
       <div className="relative z-20 flex min-h-screen items-center justify-center px-4 py-12">
         {status !== "success" ? (
-          /* Glass authentication panel */
-          <div
-            className="group relative w-full max-w-lg transform transition-all duration-700 hover:scale-[1.02]"
-            style={{
-              animation: "fadeIn 0.8s ease-out",
-            }}
-          >
-            {/* Glow effect behind card */}
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-cyan-500/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
-
-            {/* Main glass card */}
-            <div className="relative rounded-3xl border border-white/10 bg-black/40 p-8 shadow-[0_20px_80px_rgba(0,0,0,0.8)] backdrop-blur-2xl sm:p-12">
+          /* Authentication panel */
+          <div className="w-full max-w-lg">
+            {/* Main card */}
+            <div className="rounded-2xl border border-gray-800 bg-[#111] p-8 shadow-2xl sm:p-12">
               {/* Logo/Brand */}
               <div className="mb-8 text-center">
-                <h1 className="mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-4xl font-bold tracking-wider text-transparent sm:text-5xl">
+                <h1 className="mb-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
                   ZYNC
                 </h1>
-                <p className="text-sm text-gray-400">Decentralized Content Platform</p>
+                <p className="text-sm font-medium text-gray-400">Decentralized Content Platform</p>
               </div>
 
               {/* Detect State - No Freighter */}
               {status === "detect" && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-purple-500/40 bg-purple-500/5">
-                    <Wallet className="h-12 w-12 text-purple-400" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-gray-800 bg-gray-900">
+                    <Wallet className="h-10 w-10 text-gray-400" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Install Freighter</h2>
+                  <h2 className="text-xl font-bold text-white">Install Freighter</h2>
                   <p className="text-sm text-gray-400">
                     You need a Stellar wallet to access ZYNC. Freighter is free and takes less than a minute.
                   </p>
 
                   <button
                     onClick={handleInstall}
-                    className="group/btn relative w-full overflow-hidden rounded-xl border border-purple-500/50 bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 font-semibold text-white shadow-[0_0_20px_rgba(182,36,255,0.3)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(182,36,255,0.5)] focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                    className="w-full rounded-xl border border-gray-700 bg-white px-6 py-4 text-sm font-semibold text-black transition-colors hover:bg-gray-200"
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-2">
                       Install Freighter
                       <ExternalLink className="h-4 w-4" />
                     </span>
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full" />
                   </button>
 
                   <a
@@ -344,21 +221,20 @@ export default function AuthPage() {
               {/* Connect State */}
               {status === "connect" && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 ring-2 ring-blue-500/40 ring-offset-4 ring-offset-transparent">
-                    <Wallet className="h-12 w-12 text-blue-400" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-gray-800 bg-gray-900">
+                    <Wallet className="h-10 w-10 text-gray-400" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Connect Wallet</h2>
+                  <h2 className="text-xl font-bold text-white">Connect Wallet</h2>
                   <p className="text-sm text-gray-400">
                      Connect your Stellar wallet to access your decentralized content universe.
                    </p>
 
                   <button
                     onClick={handleConnect}
-                    className="group/btn relative w-full overflow-hidden rounded-xl border border-blue-500/50 bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4 font-semibold text-white shadow-[0_0_20px_rgba(0,212,255,0.3)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full rounded-xl border border-gray-700 bg-white px-6 py-4 text-sm font-semibold text-black transition-colors hover:bg-gray-200"
                     aria-label="Connect Stellar wallet"
                   >
-                    <span className="relative z-10">Connect Wallet ({walletCount})</span>
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full" />
+                    Connect Wallet ({walletCount})
                   </button>
                 </div>
               )}
@@ -366,10 +242,10 @@ export default function AuthPage() {
               {/* Connecting State */}
               {status === "connecting" && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center">
-                    <div className="h-16 w-16 animate-spin rounded-full border-4 border-blue-500/20 border-t-blue-500" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-gray-800 bg-gray-900">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-700 border-t-white" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Connecting...</h2>
+                  <h2 className="text-xl font-bold text-white">Connecting...</h2>
                   <p className="text-sm text-gray-400">Please check Freighter</p>
                 </div>
               )}
@@ -377,34 +253,32 @@ export default function AuthPage() {
               {/* Sign State */}
               {status === "sign" && address && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-green-500/20 to-blue-500/20 ring-2 ring-green-500/40 ring-offset-4 ring-offset-transparent">
-                    <Check className="h-12 w-12 text-green-400" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-gray-800 bg-gray-900">
+                    <Check className="h-10 w-10 text-white" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Sign to Continue</h2>
+                  <h2 className="text-xl font-bold text-white">Sign to Continue</h2>
 
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                    <p className="mb-2 text-xs uppercase tracking-wider text-gray-400">Connected Address</p>
+                  <div className="rounded-xl border border-gray-800 bg-gray-900 p-4">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Connected Address</p>
                     <div className="flex items-center justify-between gap-2">
-                      <code className="flex-1 truncate text-sm text-blue-400">{address}</code>
+                      <code className="flex-1 truncate text-sm text-white font-mono">{address}</code>
                       <button
                         onClick={copyAddress}
-                        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="rounded-lg p-2 text-gray-400 transition-colors hover:text-white"
                         aria-label="Copy address"
                       >
                         {copiedAddress ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                       </button>
                     </div>
-                    {/* Chain UI removed for simplicity as Freighter connects to Testnet/Futurenet based on extension */}
                   </div>
 
-                  <p className="text-xs text-gray-500">⛽ Gasless • This only proves wallet ownership</p>
+                  <p className="text-xs text-gray-500 font-medium">⛽ Gasless • This only proves wallet ownership</p>
 
                   <button
                     onClick={handleSign}
-                    className="group/btn relative w-full overflow-hidden rounded-xl border border-green-500/50 bg-gradient-to-r from-green-600 to-blue-600 px-6 py-4 font-semibold text-white shadow-[0_0_20px_rgba(0,255,163,0.3)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(0,255,163,0.5)] focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                    className="w-full rounded-xl border border-gray-700 bg-white px-6 py-4 text-sm font-semibold text-black transition-colors hover:bg-gray-200"
                   >
-                    <span className="relative z-10">Sign Message</span>
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full" />
+                    Sign Message
                   </button>
                 </div>
               )}
@@ -412,10 +286,10 @@ export default function AuthPage() {
               {/* Awaiting Signature State */}
               {status === "awaiting-signature" && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center">
-                    <div className="h-16 w-16 animate-spin rounded-full border-4 border-green-500/20 border-t-green-500" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-gray-800 bg-gray-900">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-700 border-t-white" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Awaiting Signature...</h2>
+                  <h2 className="text-xl font-bold text-white">Awaiting Signature...</h2>
                   <p className="text-sm text-gray-400">Please sign the message in Freighter</p>
                 </div>
               )}
@@ -423,10 +297,10 @@ export default function AuthPage() {
               {/* Verifying State */}
               {status === "verifying" && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center">
-                    <div className="h-16 w-16 animate-pulse rounded-full bg-gradient-to-br from-blue-500/40 to-purple-500/40" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-gray-800 bg-gray-900">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-700 border-t-white" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Verifying...</h2>
+                  <h2 className="text-xl font-bold text-white">Verifying...</h2>
                   <p className="text-sm text-gray-400">Confirming your identity</p>
                 </div>
               )}
@@ -434,17 +308,17 @@ export default function AuthPage() {
               {/* Error State */}
               {status === "error" && (
                 <div className="space-y-6 text-center">
-                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-red-500/10 ring-2 ring-red-500/40">
-                    <AlertCircle className="h-12 w-12 text-red-400" />
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10">
+                    <AlertCircle className="h-10 w-10 text-red-500" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-white">Connection Failed</h2>
+                  <h2 className="text-xl font-bold text-white">Connection Failed</h2>
                   <p className="text-sm text-gray-400">Please try again</p>
                 </div>
               )}
 
               {/* Status strip at bottom */}
-              <div className="mt-8 rounded-lg border border-white/5 bg-white/5 px-4 py-3 text-center backdrop-blur-sm">
-                <p className="text-xs text-gray-400">
+              <div className="mt-8 rounded-lg border border-gray-800 bg-gray-900 px-4 py-3 text-center">
+                <p className="text-xs font-medium text-gray-500">
                   {getStatusText()}
                   {["connecting", "awaiting-signature", "verifying"].includes(status) && (
                     <span className="ml-1 inline-flex gap-1">
@@ -460,38 +334,22 @@ export default function AuthPage() {
         ) : (
           /* Success State */
           <div className="w-full max-w-md transform text-center transition-all duration-700">
-            <div className="relative mx-auto mb-8 h-32 w-32">
-              {/* Animated expanding rings */}
-              <div
-                className="absolute inset-0 animate-ping rounded-full bg-green-500/20"
-                style={{ animationDuration: "2s" }}
-              />
-              <div
-                className="absolute inset-4 animate-ping rounded-full bg-green-500/30"
-                style={{ animationDuration: "2s", animationDelay: "0.3s" }}
-              />
-              <div
-                className="absolute inset-8 animate-ping rounded-full bg-green-500/40"
-                style={{ animationDuration: "2s", animationDelay: "0.6s" }}
-              />
-
-              {/* Liquid checkmark */}
-              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-br from-green-500/40 to-blue-500/40 backdrop-blur-xl">
-                <Check className="h-16 w-16 animate-pulse text-green-400" />
+            <div className="relative mx-auto mb-8 h-24 w-24">
+              <div className="absolute inset-0 flex items-center justify-center rounded-full border border-gray-800 bg-[#111]">
+                <Check className="h-10 w-10 text-white" />
               </div>
             </div>
 
-            <h2 className="mb-4 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-4xl font-bold text-transparent">
+            <h2 className="mb-4 text-3xl font-bold tracking-tight text-white">
               Welcome to ZYNC
             </h2>
-            <p className="mb-8 text-gray-400">Authentication successful</p>
+            <p className="mb-8 text-gray-400 font-medium">Authentication successful</p>
 
             <a
               href="/dashboard"
-              className="group/btn relative inline-flex overflow-hidden rounded-xl border border-green-500/50 bg-gradient-to-r from-green-600 to-blue-600 px-8 py-4 font-semibold text-white shadow-[0_0_30px_rgba(0,255,163,0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_60px_rgba(0,255,163,0.6)] focus:outline-none focus:ring-2 focus:ring-green-500/50"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-gray-700 bg-white px-8 py-4 font-semibold text-black transition-colors hover:bg-gray-200"
             >
-              <span className="relative z-10">Enter Dashboard</span>
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full" />
+              Enter Dashboard
             </a>
           </div>
         )}
@@ -502,10 +360,10 @@ export default function AuthPage() {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`animate-[slideIn_0.3s_ease-out] rounded-xl border px-6 py-4 shadow-2xl backdrop-blur-2xl ${
+            className={`animate-[slideIn_0.3s_ease-out] rounded-xl border px-6 py-4 shadow-xl ${
               toast.type === "error"
-                ? "border-red-500/50 bg-red-500/10 text-red-300"
-                : "border-green-500/50 bg-green-500/10 text-green-300"
+                ? "border-red-500/30 bg-red-500/10 text-red-500"
+                : "border-green-500/30 bg-green-500/10 text-green-500"
             }`}
           >
             <p className="text-sm font-medium">{toast.message}</p>

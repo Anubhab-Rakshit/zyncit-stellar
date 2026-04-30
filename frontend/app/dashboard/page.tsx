@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Globe, Lock, Rocket, Users } from "lucide-react"
 import FuturisticNavbar from "@/components/futuristic-navbar"
-import WaveGridBackground from "@/components/wave-grid-background"
+
 import { useAuth } from "@/lib/auth-context"
 
 export default function DashboardPage() {
@@ -41,19 +41,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="fixed inset-0 bg-[#0a0a0f]">
-        <WaveGridBackground />
-      </div>
-
-      <div
-        className="fixed w-96 h-96 rounded-full opacity-10 blur-3xl transition-all duration-700 ease-out pointer-events-none"
-        style={{
-          left: mousePosition.x - 192,
-          top: mousePosition.y - 192,
-          background: "radial-gradient(circle, #3b82f6 0%, transparent 70%)",
-          zIndex: 1,
-        }}
-      />
+      <div className="fixed inset-0 bg-[#0a0a0a]" />
 
       <FuturisticNavbar />
 
@@ -61,19 +49,10 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="mb-16 space-y-4">
-            <h1
-              className="font-[family-name:var(--font-display)] text-5xl sm:text-6xl md:text-7xl font-black tracking-wider"
-              style={{
-                letterSpacing: "0.1em",
-                background: "linear-gradient(135deg, #3b82f6 0%, #0284c7 50%, #06b6d4 100%)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              ZYNC DASHBOARD
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white">
+              Dashboard
             </h1>
-            <p className="text-gray-400 text-lg">Your creator hub - manage assets, track performance, and grow your audience</p>
+            <p className="text-gray-400 text-lg">Your creator hub — manage assets, track performance, and grow your audience.</p>
           </div>
 
           {/* Platform Information Grid - Static, Reliable Content */}
@@ -114,46 +93,28 @@ export default function DashboardPage() {
                 key={i}
                 data-scroll-reveal
                 id={`platform-card-${i}`}
-                className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.05] hover:-translate-y-2 ${
+                className={`group rounded-2xl p-8 border border-gray-800 bg-[#111] transition-all duration-500 hover:border-gray-600 ${
                   visibleElements.has(`platform-card-${i}`)
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
                 }`}
               >
                 <div className="space-y-4">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                    style={{
-                      background: item.color + "20",
-                      border: `1px solid ${item.color}40`,
-                    }}
-                  >
-                    <IconComponent className="w-6 h-6" style={{ color: item.color }} />
+                  <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center">
+                    <IconComponent className="w-6 h-6 text-white" />
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                    <h3 className="text-lg font-bold text-white tracking-tight">{item.title}</h3>
                     <p className="text-sm text-gray-400">{item.description}</p>
                   </div>
 
-                  <div className="pt-3 border-t border-white/5">
-                    <span
-                      className="text-xs font-mono px-3 py-1 rounded-full inline-block transition-colors duration-300"
-                      style={{
-                        background: item.color + "15",
-                        color: item.color,
-                      }}
-                    >
+                  <div className="pt-3 border-t border-gray-800">
+                    <span className="text-xs font-medium px-3 py-1 rounded-md bg-gray-800 text-gray-300">
                       {item.details}
                     </span>
                   </div>
                 </div>
-
-                {/* Glow effect on hover */}
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl pointer-events-none"
-                  style={{ background: `radial-gradient(circle, ${item.color}10, transparent 70%)` }}
-                />
               </div>
             )})}
           </div>
@@ -170,30 +131,21 @@ export default function DashboardPage() {
                 href={action.href}
                 data-scroll-reveal
                 id={`action-${i}`}
-                className={`group card-premium rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] cursor-pointer ${
+                className={`group rounded-2xl p-8 border border-gray-800 bg-[#111] transition-all duration-300 hover:border-gray-600 hover:bg-[#161616] cursor-pointer ${
                   visibleElements.has(`action-${i}`)
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
                 }`}
               >
                 <div className="space-y-3">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                    style={{
-                      background: action.color + "15",
-                      border: `1px solid ${action.color}30`,
-                    }}
-                  >
-                    <div
-                      className="w-6 h-6 rounded-full animate-pulse-glow"
-                      style={{ background: action.color }}
-                    />
+                  <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center mb-6">
+                    <div className="w-4 h-4 rounded-full bg-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-[#06b6d4] transition-colors">{action.title}</h3>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{action.title}</h3>
                   <p className="text-sm text-gray-400">{action.description}</p>
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm font-mono text-gray-500 group-hover:text-[#3b82f6] transition-colors">
+                <div className="mt-6 flex items-center gap-2 text-sm font-medium text-gray-400 group-hover:text-white transition-colors">
                   <span>Access</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
@@ -202,9 +154,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Info Section */}
-          <div className="card-premium rounded-2xl p-8 md:p-12 border border-white/5">
-            <h2 className="text-2xl font-bold text-white mb-4">Your ZYNC Hub</h2>
-            <p className="text-gray-400 leading-relaxed">
+          <div className="rounded-2xl p-8 md:p-12 border border-gray-800 bg-[#111]">
+            <h2 className="text-2xl font-bold text-white tracking-tight mb-4">Your ZYNC Hub</h2>
+            <p className="text-gray-400 leading-relaxed max-w-4xl">
               Manage your published content and digital assets on the ZYNC platform. View all your tokenized pages, monitor performance metrics, and access real-time analytics. Upload new content, manage your NFT portfolio, and track your growth across the decentralized publishing ecosystem.
             </p>
           </div>
