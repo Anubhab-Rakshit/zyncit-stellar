@@ -76,11 +76,14 @@ Improvement commit links:
 # Freighter Connection : 
 <img width="3024" height="1550" alt="image" src="https://github.com/user-attachments/assets/6344465c-a40f-4b15-b8c5-587a613125bc" />
 # Homepage :
-<img width="3006" height="1248" alt="image" src="https://github.com/user-attachments/assets/edadd8b3-f9d5-4503-b5aa-67f91fa23feb" />
+<img width="1506" height="765" alt="image" src="https://github.com/user-attachments/assets/ba29c126-3ac1-479e-a629-d84373968cc9" />
+
 # NFT Upload :
-<img width="2774" height="1480" alt="image" src="https://github.com/user-attachments/assets/1d1d8931-2399-4135-b0dc-9e4484066ffb" />
+<img width="1388" height="749" alt="image" src="https://github.com/user-attachments/assets/7bbf5ab4-9172-4301-a2cb-d9d0901835a6" />
+
 # Wallet Balance : 
-<img width="2972" height="1332" alt="image" src="https://github.com/user-attachments/assets/cf3d4cd7-6155-47ef-bec9-16c92a7abfc0" />
+<img width="1434" height="687" alt="image" src="https://github.com/user-attachments/assets/e967bc50-289e-4eb8-a240-7e78156ae773" />
+
 
 
 
