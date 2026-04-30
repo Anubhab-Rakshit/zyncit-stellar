@@ -74,7 +74,8 @@ Improvement commit links:
 - Explorer links are aligned to Stellar testnet.
 
 # Freighter Connection : 
-<img width="3024" height="1550" alt="image" src="https://github.com/user-attachments/assets/6344465c-a40f-4b15-b8c5-587a613125bc" />
+<img width="1296" height="762" alt="image" src="https://github.com/user-attachments/assets/55353c36-6b4d-41b8-adcb-f1bd33500be1" />
+
 # Homepage :
 <img width="1506" height="765" alt="image" src="https://github.com/user-attachments/assets/ba29c126-3ac1-479e-a629-d84373968cc9" />
 
