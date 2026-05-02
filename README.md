@@ -1,4 +1,10 @@
+<div align="center">
+  <img src="./frontend/public/logo.svg" alt="ZYNC Logo" width="150" />
+</div>
+
 # ZYNC - Decentralized Media Content Platform on Stellar
+
+[![CI/CD Pipeline](https://github.com/Anubhab-Rakshit/zyncit-stellar/actions/workflows/ci.yml/badge.svg)](https://github.com/Anubhab-Rakshit/zyncit-stellar/actions/workflows/ci.yml)
 
 ZYNC is a decentralized media content platform built on the Stellar testnet with Soroban smart contracts.
 Creators can upload media, register its fingerprint on-chain, mint NFTs, and manage content ownership with wallet-based auth.
@@ -84,6 +90,9 @@ Improvement commit links:
 
 # Wallet Balance : 
 <img width="1434" height="687" alt="image" src="https://github.com/user-attachments/assets/e967bc50-289e-4eb8-a240-7e78156ae773" />
+
+# Mobile View :
+<img alt="Mobile View" src="./assets/zync-mobile-view.png" width="300" />
 
 
 
